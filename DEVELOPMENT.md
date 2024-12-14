@@ -49,7 +49,7 @@ yarn
 ### Step 3: Set Up the Development Environment with Docker
 Run the provided setup script to initialize the Docker environment:
 ```bash
-cd /path/to/wazuh-dashboard-plugins/docker
+cd /path/to/wazuh-dashboard-plugins/
 chmod +x docker-setup.sh
 ```
 
