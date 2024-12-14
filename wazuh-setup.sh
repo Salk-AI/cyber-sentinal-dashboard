@@ -524,7 +524,7 @@ main() {
 
     # Check prerequisites
     check_root
-    check_dependencies
+    # check_dependencies
 
     # Handle uninstall case
     if [[ "$to_do" == "uninstall" ]]; then
