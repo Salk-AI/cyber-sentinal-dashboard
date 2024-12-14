@@ -149,7 +149,7 @@ function generate_offline_files() {
 
     log "Successfully generated offline files for $distro distribution"
     return 0
-fi
+}
 
 
 
