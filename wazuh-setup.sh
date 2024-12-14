@@ -193,6 +193,7 @@ function generate_install_files() {
 
 function install_indexer() {
     local ip_address="$1"
+    local distro="$2"
     local node_name="node-1"
     local certs_dir="/etc/wazuh-indexer/certs"
 
@@ -203,9 +204,20 @@ function install_indexer() {
     fi
 
     log "Installing Wazuh indexer..."
-    if ! sudo dpkg -i ./wazuh-offline/wazuh-packages/wazuh-indexer_4.9.2-1_amd64.deb; then
-        error "Failed to install Wazuh indexer package"
-        return 1
+    if [[ "$distro" == "deb" ]]; then
+        if ! sudo dpkg -i ./wazuh-offline/wazuh-packages/wazuh-indexer_4.9.2-1_amd64.deb; then
+            error "Failed to install Wazuh indexer package"
+            return 1
+        fi
+    elif [[ "$distro" == "rpm" ]]; then
+        if ! sudo rpm --import ./wazuh-offline/wazuh-files/GPG-KEY-WAZUH; then
+            error "Failed to import GPG key"
+            return 1
+        fi
+        if ! sudo rpm -ivh ./wazuh-offline/wazuh-packages/wazuh-indexer*.rpm; then
+            error "Failed to install Wazuh indexer package"
+            return 1
+        fi
     fi
 
     # Create and configure certificates directory
@@ -269,11 +281,19 @@ function install_indexer() {
 
 
 function install_manager() {
+    local distro="$1"
     log "Installing Wazuh manager..."
     
-    if ! sudo dpkg -i ./wazuh-offline/wazuh-packages/wazuh-manager_*.deb; then
-        error "Failed to install Wazuh manager package"
-        return 1
+    if [ "$distro" = "rpm" ]; then
+        if ! sudo rpm --import ./wazuh-offline/wazuh-files/GPG-KEY-WAZUH || ! rpm -ivh ./wazuh-offline/wazuh-packages/wazuh-manager*.rpm; then
+            error "Failed to install Wazuh manager package"
+            return 1
+        fi
+    else
+        if ! sudo dpkg -i ./wazuh-offline/wazuh-packages/wazuh-manager_4.9.2-1_amd64.deb; then
+            error "Failed to install Wazuh manager package"
+            return 1
+        fi
     fi
 
     if ! echo 'admin' | sudo /var/ossec/bin/wazuh-keystore -f indexer -k username; then
@@ -305,6 +325,7 @@ function install_manager() {
 
 function install_filebeat() {
     local ip_address="$1"
+    local distro="$2"
 
     if [ -z "$ip_address" ]; then
         error "IP address parameter is required"
@@ -312,9 +333,16 @@ function install_filebeat() {
     fi
 
     log "Installing Filebeat..."
-    if ! sudo dpkg -i ./wazuh-offline/wazuh-packages/filebeat-*.deb; then
-        error "Failed to install Filebeat package"
-        return 1
+    if [ "$distro" = "deb" ]; then
+        if ! sudo dpkg -i ./wazuh-offline/wazuh-packages/filebeat-oss-7.10.2-amd64.deb; then
+            error "Failed to install Filebeat package"
+            return 1
+        fi
+    else
+        if ! sudo rpm -ivh ./wazuh-offline/wazuh-packages/filebeat*.rpm; then
+            error "Failed to install Filebeat package"
+            return 1
+        fi
     fi
 
     # Copy configuration files
@@ -398,9 +426,17 @@ function install_dashboard() {
     fi
 
     log "Installing Wazuh dashboard..."
-    if ! sudo dpkg -i wazuh-dashboard/dev-tools/build-packages/output/deb/wazuh-dashboard_*.deb; then
-        error "Failed to install Wazuh dashboard package"
-        return 1
+    if [ "$distro" = "rpm" ]; then
+        if ! sudo rpm --import ./wazuh-offline/wazuh-files/GPG-KEY-WAZUH || \
+           ! sudo rpm -ivh ./wazuh-offline/wazuh-packages/wazuh-dashboard*.rpm; then
+            error "Failed to install Wazuh dashboard package"
+            return 1
+        fi
+    else
+        if ! sudo dpkg -i wazuh-dashboard/dev-tools/build-packages/output/deb/wazuh-dashboard_*.deb; then
+            error "Failed to install Wazuh dashboard package"
+            return 1
+        fi
     fi
 
     # Setup certificates
@@ -532,26 +568,26 @@ main() {
     case "$component" in
         all)
             echo -e "${YELLOW}Installing all Wazuh components...${NC}"
-            install_indexer "$ip_address" && \
-            install_manager && \
-            install_filebeat "$ip_address" && \
-            install_dashboard "$ip_address"
+            install_indexer "$ip_address" "$distro" && \
+            install_manager "$distro" && \
+            install_filebeat "$ip_address" "$distro" && \
+            install_dashboard "$ip_address" "$distro"
             ;;
         indexer)
             echo -e "${YELLOW}Installing Wazuh indexer...${NC}"
-            install_indexer "$ip_address"
+            install_indexer "$ip_address" "$distro"
             ;;
         manager)
             echo -e "${YELLOW}Installing Wazuh manager...${NC}"
-            install_manager
+            install_manager "$distro"
             ;;
         filebeat)
             echo -e "${YELLOW}Installing Filebeat...${NC}"
-            install_filebeat "$ip_address"
+            install_filebeat "$ip_address" "$distro"
             ;;
         dashboard)
             echo -e "${YELLOW}Installing Wazuh dashboard...${NC}"
-            install_dashboard "$ip_address"
+            install_dashboard "$ip_address" "$distro"
             ;;
         *)
             echo -e "${RED}Error: Invalid component. Use one of: all, indexer, manager, filebeat, dashboard.${NC}"
