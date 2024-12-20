@@ -1,0 +1,3 @@
+.euiBreadcrumbWrapper.euiBreadcrumbWrapper--last::before {
+    background-color: #78d67b !important;
+}

@@ -29,6 +29,7 @@
  */
 
 require('./polyfills');
+require('./styles/globals.css');
 
 export const Jquery = require('jquery');
 window.$ = window.jQuery = Jquery;
