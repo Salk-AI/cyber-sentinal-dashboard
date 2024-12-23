@@ -185,7 +185,14 @@ function generate_install_files() {
         return 1
     fi
 
-    log "Successfully generated installation files"
+    # log "Successfully generated installation files"
+    log "Extracting installation files.."
+    if ! sudo tar xf wazuh-install-files.tar; then
+        error "Error in extracting installation files"
+        return 1
+    fi
+
+    log "Files extracted successfully.."
     return 0
 }
 
@@ -483,6 +490,32 @@ function install_dashboard() {
     return 0
 }
 
+
+function generate_offline_files(){
+    log "Generating offline files for offline installation."
+    local distro="$1"
+    if [ ! -f "wazuh-install.sh" ]; then
+        curl -sO https://packages.wazuh.com/4.9/wazuh-install.sh
+    fi
+    sudo chmod 744 wazuh-install.sh
+
+    if [ "$distro" = "rpm" ]; then
+        sudo ./wazuh-install.sh -dw rpm
+    elif [ "$distro" = "deb" ]; then
+        sudo ./wazuh-install.sh -dw deb
+    fi
+
+    log "Extracting offline files.."
+    if ! sudo tar xf wazuh-offline.tar.gz; then
+        error "Error in extracting offline files.."
+        exit 1
+    fi
+
+    log "Offline files extracted successfully..."
+    return 1
+}
+
+
 main() {
     # Define variables
     local distro=""
@@ -493,6 +526,16 @@ main() {
     # Parse named arguments
     while [[ $# -gt 0 ]]; do
         case "$1" in
+            --offline-files)
+                distro="$2"
+                generate_offline_files "$distro"
+                exit 0
+                ;;
+            --generate-install-files)
+                ip_address="$2"
+                generate_install_files "$ip_address"
+                exit 0
+                ;;
             --distro)
                 distro="$2"
                 shift 2
@@ -535,33 +578,33 @@ main() {
     fi
 
     # Download and prepare installation files
-    echo -e "${YELLOW}Downloading Wazuh installation files...${NC}"
-    if ! curl -sO https://packages.wazuh.com/4.9/wazuh-install.sh; then
-        echo -e "${RED}Error: Failed to download wazuh-install.sh.${NC}"
-        exit 1
-    fi
+    # echo -e "${YELLOW}Downloading Wazuh installation files...${NC}"
+    # if ! curl -sO https://packages.wazuh.com/4.9/wazuh-install.sh; then
+    #     echo -e "${RED}Error: Failed to download wazuh-install.sh.${NC}"
+    #     exit 1
+    # fi
 
-    chmod 744 wazuh-install.sh
+    # chmod 744 wazuh-install.sh
 
-    echo -e "${YELLOW}Cleaning up existing installation files...${NC}"
-    sudo rm -rf wazuh-offline/ wazuh-install-files/ wazuh-offline.tar.gz wazuh-install-files.tar
+    # echo -e "${YELLOW}Cleaning up existing installation files...${NC}"
+    # sudo rm -rf wazuh-offline/ wazuh-install-files/ wazuh-offline.tar.gz wazuh-install-files.tar
 
-    # Generate required files
-    if ! generate_offline_files "$distro"; then
-        echo -e "${RED}Error: Failed to generate offline files.${NC}"
-        exit 1
-    fi
+    # # Generate required files
+    # if ! generate_offline_files "$distro"; then
+    #     echo -e "${RED}Error: Failed to generate offline files.${NC}"
+    #     exit 1
+    # fi
 
-    if ! generate_install_files "$ip_address"; then
-        echo -e "${RED}Error: Failed to generate installation files.${NC}"
-        exit 1
-    fi
+    # if ! generate_install_files "$ip_address"; then
+    #     echo -e "${RED}Error: Failed to generate installation files.${NC}"
+    #     exit 1
+    # fi
 
-    echo -e "${YELLOW}Extracting installation files...${NC}"
-    if ! sudo tar xf wazuh-offline.tar.gz || ! sudo tar xf wazuh-install-files.tar; then
-        echo -e "${RED}Error: Failed to extract tar files.${NC}"
-        exit 1
-    fi
+    # echo -e "${YELLOW}Extracting installation files...${NC}"
+    # if ! sudo tar xf wazuh-offline.tar.gz || ! sudo tar xf wazuh-install-files.tar; then
+    #     echo -e "${RED}Error: Failed to extract tar files.${NC}"
+    #     exit 1
+    # fi
 
     # Install components based on selection
     echo -e "${GREEN}Starting installation process...${NC}"
