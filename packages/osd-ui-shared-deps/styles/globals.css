@@ -1,3 +1,7 @@
 .euiBreadcrumbWrapper.euiBreadcrumbWrapper--last::before {
     background-color: #78d67b !important;
 }
+
+.euiBreadcrumbWall--single {
+    background-image: linear-gradient(to right, #78d67b 0 12px, transparent 12px) !important;
+}
