@@ -5,3 +5,12 @@
 .euiBreadcrumbWall--single {
     background-image: linear-gradient(to right, #78d67b 0 12px, transparent 12px) !important;
 }
+
+.wz-app .euiPage {
+    background-color: #e65252 !important;
+}
+
+:root {
+    --eui-font-family: var(--font-avenir), Arial, Helvetica, sans-serif !important;
+    --eui-code-font-family: var(--font-avenir), Arial, Helvetica, sans-serif !important;
+}
