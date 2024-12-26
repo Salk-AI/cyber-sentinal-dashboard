@@ -1,0 +1,29 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getObjectProperties = getObjectProperties;
+/*
+ *   Copyright OpenSearch Contributors
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License").
+ *   You may not use this file except in compliance with the License.
+ *   A copy of the License is located at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   or in the "license" file accompanying this file. This file is distributed
+ *   on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *   express or implied. See the License for the specific language governing
+ *   permissions and limitations under the License.
+ */
+
+function getObjectProperties(obj, objName) {
+  const objSummary = [];
+  for (const [key, value] of Object.entries(obj)) {
+    objSummary.push(`${key}: ${value !== undefined ? 'Defined' : 'Not Defined'}`);
+  }
+  return `${objName} properties:\n${objSummary.map(option => `  ${option}`).join('\n')}`;
+}
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJnZXRPYmplY3RQcm9wZXJ0aWVzIiwib2JqIiwib2JqTmFtZSIsIm9ialN1bW1hcnkiLCJrZXkiLCJ2YWx1ZSIsIk9iamVjdCIsImVudHJpZXMiLCJwdXNoIiwidW5kZWZpbmVkIiwibWFwIiwib3B0aW9uIiwiam9pbiJdLCJzb3VyY2VzIjpbIm9iamVjdF9wcm9wZXJ0aWVzX2RlZmluZWQudHMiXSwic291cmNlc0NvbnRlbnQiOlsiLypcbiAqICAgQ29weXJpZ2h0IE9wZW5TZWFyY2ggQ29udHJpYnV0b3JzXG4gKlxuICogICBMaWNlbnNlZCB1bmRlciB0aGUgQXBhY2hlIExpY2Vuc2UsIFZlcnNpb24gMi4wICh0aGUgXCJMaWNlbnNlXCIpLlxuICogICBZb3UgbWF5IG5vdCB1c2UgdGhpcyBmaWxlIGV4Y2VwdCBpbiBjb21wbGlhbmNlIHdpdGggdGhlIExpY2Vuc2UuXG4gKiAgIEEgY29weSBvZiB0aGUgTGljZW5zZSBpcyBsb2NhdGVkIGF0XG4gKlxuICogICAgICAgaHR0cDovL3d3dy5hcGFjaGUub3JnL2xpY2Vuc2VzL0xJQ0VOU0UtMi4wXG4gKlxuICogICBvciBpbiB0aGUgXCJsaWNlbnNlXCIgZmlsZSBhY2NvbXBhbnlpbmcgdGhpcyBmaWxlLiBUaGlzIGZpbGUgaXMgZGlzdHJpYnV0ZWRcbiAqICAgb24gYW4gXCJBUyBJU1wiIEJBU0lTLCBXSVRIT1VUIFdBUlJBTlRJRVMgT1IgQ09ORElUSU9OUyBPRiBBTlkgS0lORCwgZWl0aGVyXG4gKiAgIGV4cHJlc3Mgb3IgaW1wbGllZC4gU2VlIHRoZSBMaWNlbnNlIGZvciB0aGUgc3BlY2lmaWMgbGFuZ3VhZ2UgZ292ZXJuaW5nXG4gKiAgIHBlcm1pc3Npb25zIGFuZCBsaW1pdGF0aW9ucyB1bmRlciB0aGUgTGljZW5zZS5cbiAqL1xuXG5leHBvcnQgZnVuY3Rpb24gZ2V0T2JqZWN0UHJvcGVydGllcyhvYmo6IFJlY29yZDxzdHJpbmcsIGFueT4sIG9iak5hbWU6IHN0cmluZyk6IHN0cmluZyB7XG4gIGNvbnN0IG9ialN1bW1hcnk6IHN0cmluZ1tdID0gW107XG5cbiAgZm9yIChjb25zdCBba2V5LCB2YWx1ZV0gb2YgT2JqZWN0LmVudHJpZXMob2JqKSkge1xuICAgIG9ialN1bW1hcnkucHVzaChgJHtrZXl9OiAke3ZhbHVlICE9PSB1bmRlZmluZWQgPyAnRGVmaW5lZCcgOiAnTm90IERlZmluZWQnfWApO1xuICB9XG5cbiAgcmV0dXJuIGAke29iak5hbWV9IHByb3BlcnRpZXM6XFxuJHtvYmpTdW1tYXJ5Lm1hcCgob3B0aW9uKSA9PiBgICAke29wdGlvbn1gKS5qb2luKCdcXG4nKX1gO1xufVxuIl0sIm1hcHBpbmdzIjoiOzs7Ozs7QUFBQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBOztBQUVPLFNBQVNBLG1CQUFtQkEsQ0FBQ0MsR0FBd0IsRUFBRUMsT0FBZSxFQUFVO0VBQ3JGLE1BQU1DLFVBQW9CLEdBQUcsRUFBRTtFQUUvQixLQUFLLE1BQU0sQ0FBQ0MsR0FBRyxFQUFFQyxLQUFLLENBQUMsSUFBSUMsTUFBTSxDQUFDQyxPQUFPLENBQUNOLEdBQUcsQ0FBQyxFQUFFO0lBQzlDRSxVQUFVLENBQUNLLElBQUksQ0FBRSxHQUFFSixHQUFJLEtBQUlDLEtBQUssS0FBS0ksU0FBUyxHQUFHLFNBQVMsR0FBRyxhQUFjLEVBQUMsQ0FBQztFQUMvRTtFQUVBLE9BQVEsR0FBRVAsT0FBUSxpQkFBZ0JDLFVBQVUsQ0FBQ08sR0FBRyxDQUFFQyxNQUFNLElBQU0sS0FBSUEsTUFBTyxFQUFDLENBQUMsQ0FBQ0MsSUFBSSxDQUFDLElBQUksQ0FBRSxFQUFDO0FBQzFGIn0=

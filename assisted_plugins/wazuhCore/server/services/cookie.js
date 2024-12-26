@@ -1,0 +1,26 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getCookieValueByName = void 0;
+/*
+ * Wazuh app - Cookie util functions
+ * Copyright (C) 2015-2022 Wazuh, Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * Find more information about this on the LICENSE file.
+ */
+
+const getCookieValueByName = (cookie, name) => {
+  if (!cookie) return;
+  const cookieRegExp = new RegExp(`.*${name}=([^;]+)`);
+  const [_, cookieNameValue] = cookie.match(cookieRegExp) || [];
+  return cookieNameValue;
+};
+exports.getCookieValueByName = getCookieValueByName;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJnZXRDb29raWVWYWx1ZUJ5TmFtZSIsImNvb2tpZSIsIm5hbWUiLCJjb29raWVSZWdFeHAiLCJSZWdFeHAiLCJfIiwiY29va2llTmFtZVZhbHVlIiwibWF0Y2giLCJleHBvcnRzIl0sInNvdXJjZXMiOlsiY29va2llLnRzIl0sInNvdXJjZXNDb250ZW50IjpbIi8qXG4gKiBXYXp1aCBhcHAgLSBDb29raWUgdXRpbCBmdW5jdGlvbnNcbiAqIENvcHlyaWdodCAoQykgMjAxNS0yMDIyIFdhenVoLCBJbmMuXG4gKlxuICogVGhpcyBwcm9ncmFtIGlzIGZyZWUgc29mdHdhcmU7IHlvdSBjYW4gcmVkaXN0cmlidXRlIGl0IGFuZC9vciBtb2RpZnlcbiAqIGl0IHVuZGVyIHRoZSB0ZXJtcyBvZiB0aGUgR05VIEdlbmVyYWwgUHVibGljIExpY2Vuc2UgYXMgcHVibGlzaGVkIGJ5XG4gKiB0aGUgRnJlZSBTb2Z0d2FyZSBGb3VuZGF0aW9uOyBlaXRoZXIgdmVyc2lvbiAyIG9mIHRoZSBMaWNlbnNlLCBvclxuICogKGF0IHlvdXIgb3B0aW9uKSBhbnkgbGF0ZXIgdmVyc2lvbi5cbiAqXG4gKiBGaW5kIG1vcmUgaW5mb3JtYXRpb24gYWJvdXQgdGhpcyBvbiB0aGUgTElDRU5TRSBmaWxlLlxuICovXG5cbmV4cG9ydCBjb25zdCBnZXRDb29raWVWYWx1ZUJ5TmFtZSA9IChcbiAgY29va2llOiBzdHJpbmcsXG4gIG5hbWU6IHN0cmluZyxcbik6IHN0cmluZyB8IHVuZGVmaW5lZCA9PiB7XG4gIGlmICghY29va2llKSByZXR1cm47XG4gIGNvbnN0IGNvb2tpZVJlZ0V4cCA9IG5ldyBSZWdFeHAoYC4qJHtuYW1lfT0oW147XSspYCk7XG4gIGNvbnN0IFtfLCBjb29raWVOYW1lVmFsdWVdID0gY29va2llLm1hdGNoKGNvb2tpZVJlZ0V4cCkgfHwgW107XG4gIHJldHVybiBjb29raWVOYW1lVmFsdWU7XG59O1xuIl0sIm1hcHBpbmdzIjoiOzs7Ozs7QUFBQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBOztBQUVPLE1BQU1BLG9CQUFvQixHQUFHQSxDQUNsQ0MsTUFBYyxFQUNkQyxJQUFZLEtBQ1c7RUFDdkIsSUFBSSxDQUFDRCxNQUFNLEVBQUU7RUFDYixNQUFNRSxZQUFZLEdBQUcsSUFBSUMsTUFBTSxDQUFFLEtBQUlGLElBQUssVUFBUyxDQUFDO0VBQ3BELE1BQU0sQ0FBQ0csQ0FBQyxFQUFFQyxlQUFlLENBQUMsR0FBR0wsTUFBTSxDQUFDTSxLQUFLLENBQUNKLFlBQVksQ0FBQyxJQUFJLEVBQUU7RUFDN0QsT0FBT0csZUFBZTtBQUN4QixDQUFDO0FBQUNFLE9BQUEsQ0FBQVIsb0JBQUEsR0FBQUEsb0JBQUEifQ==

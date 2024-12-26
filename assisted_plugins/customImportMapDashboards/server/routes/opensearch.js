@@ -1,0 +1,25 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = _default;
+var _configSchema = require("@osd/config-schema");
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+// eslint-disable-next-line import/no-default-export
+function _default(services, router) {
+  router.post({
+    path: '/api/custom_import_map/_indices',
+    validate: {
+      body: _configSchema.schema.object({
+        index: _configSchema.schema.string()
+      })
+    }
+  }, services.getIndex);
+}
+module.exports = exports.default;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJfY29uZmlnU2NoZW1hIiwicmVxdWlyZSIsIl9kZWZhdWx0Iiwic2VydmljZXMiLCJyb3V0ZXIiLCJwb3N0IiwicGF0aCIsInZhbGlkYXRlIiwiYm9keSIsInNjaGVtYSIsIm9iamVjdCIsImluZGV4Iiwic3RyaW5nIiwiZ2V0SW5kZXgiLCJtb2R1bGUiLCJleHBvcnRzIiwiZGVmYXVsdCJdLCJzb3VyY2VzIjpbIm9wZW5zZWFyY2gudHMiXSwic291cmNlc0NvbnRlbnQiOlsiLypcbiAqIENvcHlyaWdodCBPcGVuU2VhcmNoIENvbnRyaWJ1dG9yc1xuICogU1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6IEFwYWNoZS0yLjBcbiAqL1xuXG5pbXBvcnQgeyBzY2hlbWEgfSBmcm9tICdAb3NkL2NvbmZpZy1zY2hlbWEnO1xuXG4vLyBlc2xpbnQtZGlzYWJsZS1uZXh0LWxpbmUgaW1wb3J0L25vLWRlZmF1bHQtZXhwb3J0XG5leHBvcnQgZGVmYXVsdCBmdW5jdGlvbiAoc2VydmljZXMsIHJvdXRlcikge1xuICByb3V0ZXIucG9zdChcbiAgICB7XG4gICAgICBwYXRoOiAnL2FwaS9jdXN0b21faW1wb3J0X21hcC9faW5kaWNlcycsXG4gICAgICB2YWxpZGF0ZToge1xuICAgICAgICBib2R5OiBzY2hlbWEub2JqZWN0KHtcbiAgICAgICAgICBpbmRleDogc2NoZW1hLnN0cmluZygpLFxuICAgICAgICB9KSxcbiAgICAgIH0sXG4gICAgfSxcbiAgICBzZXJ2aWNlcy5nZXRJbmRleFxuICApO1xufVxuIl0sIm1hcHBpbmdzIjoiOzs7Ozs7QUFLQSxJQUFBQSxhQUFBLEdBQUFDLE9BQUE7QUFMQTtBQUNBO0FBQ0E7QUFDQTs7QUFJQTtBQUNlLFNBQUFDLFNBQVVDLFFBQVEsRUFBRUMsTUFBTSxFQUFFO0VBQ3pDQSxNQUFNLENBQUNDLElBQUksQ0FDVDtJQUNFQyxJQUFJLEVBQUUsaUNBQWlDO0lBQ3ZDQyxRQUFRLEVBQUU7TUFDUkMsSUFBSSxFQUFFQyxvQkFBTSxDQUFDQyxNQUFNLENBQUM7UUFDbEJDLEtBQUssRUFBRUYsb0JBQU0sQ0FBQ0csTUFBTSxDQUFDO01BQ3ZCLENBQUM7SUFDSDtFQUNGLENBQUMsRUFDRFQsUUFBUSxDQUFDVSxRQUNYLENBQUM7QUFDSDtBQUFDQyxNQUFBLENBQUFDLE9BQUEsR0FBQUEsT0FBQSxDQUFBQyxPQUFBIn0=

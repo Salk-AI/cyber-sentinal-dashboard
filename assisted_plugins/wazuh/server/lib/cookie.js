@@ -1,0 +1,26 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getCookieValueByName = void 0;
+/*
+ * Wazuh app - Cookie util functions
+ * Copyright (C) 2015-2022 Wazuh, Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * Find more information about this on the LICENSE file.
+ */
+
+const getCookieValueByName = (cookie, name) => {
+  if (!cookie) return;
+  const cookieRegExp = new RegExp(`.*${name}=([^;]+)`);
+  const [_, cookieNameValue] = cookie.match(cookieRegExp) || [];
+  return cookieNameValue;
+};
+exports.getCookieValueByName = getCookieValueByName;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJnZXRDb29raWVWYWx1ZUJ5TmFtZSIsImNvb2tpZSIsIm5hbWUiLCJjb29raWVSZWdFeHAiLCJSZWdFeHAiLCJfIiwiY29va2llTmFtZVZhbHVlIiwibWF0Y2giLCJleHBvcnRzIl0sInNvdXJjZXMiOlsiY29va2llLnRzIl0sInNvdXJjZXNDb250ZW50IjpbIi8qXG4gKiBXYXp1aCBhcHAgLSBDb29raWUgdXRpbCBmdW5jdGlvbnNcbiAqIENvcHlyaWdodCAoQykgMjAxNS0yMDIyIFdhenVoLCBJbmMuXG4gKlxuICogVGhpcyBwcm9ncmFtIGlzIGZyZWUgc29mdHdhcmU7IHlvdSBjYW4gcmVkaXN0cmlidXRlIGl0IGFuZC9vciBtb2RpZnlcbiAqIGl0IHVuZGVyIHRoZSB0ZXJtcyBvZiB0aGUgR05VIEdlbmVyYWwgUHVibGljIExpY2Vuc2UgYXMgcHVibGlzaGVkIGJ5XG4gKiB0aGUgRnJlZSBTb2Z0d2FyZSBGb3VuZGF0aW9uOyBlaXRoZXIgdmVyc2lvbiAyIG9mIHRoZSBMaWNlbnNlLCBvclxuICogKGF0IHlvdXIgb3B0aW9uKSBhbnkgbGF0ZXIgdmVyc2lvbi5cbiAqXG4gKiBGaW5kIG1vcmUgaW5mb3JtYXRpb24gYWJvdXQgdGhpcyBvbiB0aGUgTElDRU5TRSBmaWxlLlxuICovXG5cbmV4cG9ydCBjb25zdCBnZXRDb29raWVWYWx1ZUJ5TmFtZSA9IChjb29raWU6IHN0cmluZywgbmFtZTogc3RyaW5nKTogKHN0cmluZyB8IHVuZGVmaW5lZCkgPT4ge1xuICBpZiAoIWNvb2tpZSkgcmV0dXJuO1xuICBjb25zdCBjb29raWVSZWdFeHAgPSBuZXcgUmVnRXhwKGAuKiR7bmFtZX09KFteO10rKWApO1xuICBjb25zdCBbXywgY29va2llTmFtZVZhbHVlXSA9IGNvb2tpZS5tYXRjaChjb29raWVSZWdFeHApIHx8IFtdO1xuICByZXR1cm4gY29va2llTmFtZVZhbHVlO1xufSJdLCJtYXBwaW5ncyI6Ijs7Ozs7O0FBQUE7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTs7QUFFTyxNQUFNQSxvQkFBb0IsR0FBR0EsQ0FBQ0MsTUFBYyxFQUFFQyxJQUFZLEtBQTJCO0VBQzFGLElBQUksQ0FBQ0QsTUFBTSxFQUFFO0VBQ2IsTUFBTUUsWUFBWSxHQUFHLElBQUlDLE1BQU0sQ0FBRSxLQUFJRixJQUFLLFVBQVMsQ0FBQztFQUNwRCxNQUFNLENBQUNHLENBQUMsRUFBRUMsZUFBZSxDQUFDLEdBQUdMLE1BQU0sQ0FBQ00sS0FBSyxDQUFDSixZQUFZLENBQUMsSUFBSSxFQUFFO0VBQzdELE9BQU9HLGVBQWU7QUFDeEIsQ0FBQztBQUFBRSxPQUFBLENBQUFSLG9CQUFBLEdBQUFBLG9CQUFBIn0=

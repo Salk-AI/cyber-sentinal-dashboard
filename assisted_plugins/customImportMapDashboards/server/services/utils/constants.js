@@ -1,0 +1,21 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.DEFAULT_HEADERS = exports.CLUSTER = void 0;
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+const DEFAULT_HEADERS = exports.DEFAULT_HEADERS = {
+  'Content-Type': 'application/json',
+  Accept: 'application/json',
+  'User-Agent': 'OpenSearch-Dashboards',
+  'osd-xsrf': true
+};
+const CLUSTER = exports.CLUSTER = {
+  GEOSPATIAL: 'opensearch_geospatial'
+};
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJERUZBVUxUX0hFQURFUlMiLCJleHBvcnRzIiwiQWNjZXB0IiwiQ0xVU1RFUiIsIkdFT1NQQVRJQUwiXSwic291cmNlcyI6WyJjb25zdGFudHMudHMiXSwic291cmNlc0NvbnRlbnQiOlsiLypcbiAqIENvcHlyaWdodCBPcGVuU2VhcmNoIENvbnRyaWJ1dG9yc1xuICogU1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6IEFwYWNoZS0yLjBcbiAqL1xuXG5leHBvcnQgY29uc3QgREVGQVVMVF9IRUFERVJTID0ge1xuICAnQ29udGVudC1UeXBlJzogJ2FwcGxpY2F0aW9uL2pzb24nLFxuICBBY2NlcHQ6ICdhcHBsaWNhdGlvbi9qc29uJyxcbiAgJ1VzZXItQWdlbnQnOiAnT3BlblNlYXJjaC1EYXNoYm9hcmRzJyxcbiAgJ29zZC14c3JmJzogdHJ1ZSxcbn07XG5leHBvcnQgY29uc3QgQ0xVU1RFUiA9IHtcbiAgR0VPU1BBVElBTDogJ29wZW5zZWFyY2hfZ2Vvc3BhdGlhbCcsXG59O1xuIl0sIm1hcHBpbmdzIjoiOzs7Ozs7QUFBQTtBQUNBO0FBQ0E7QUFDQTs7QUFFTyxNQUFNQSxlQUFlLEdBQUFDLE9BQUEsQ0FBQUQsZUFBQSxHQUFHO0VBQzdCLGNBQWMsRUFBRSxrQkFBa0I7RUFDbENFLE1BQU0sRUFBRSxrQkFBa0I7RUFDMUIsWUFBWSxFQUFFLHVCQUF1QjtFQUNyQyxVQUFVLEVBQUU7QUFDZCxDQUFDO0FBQ00sTUFBTUMsT0FBTyxHQUFBRixPQUFBLENBQUFFLE9BQUEsR0FBRztFQUNyQkMsVUFBVSxFQUFFO0FBQ2QsQ0FBQyJ9

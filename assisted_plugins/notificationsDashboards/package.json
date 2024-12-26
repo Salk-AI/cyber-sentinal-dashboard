@@ -1,0 +1,40 @@
+{
+  "name": "notifications-dashboards",
+  "version": "2.13.0.0",
+  "description": "OpenSearch Dashboards Notifications Plugin",
+  "license": "Apache-2.0",
+  "main": "index.ts",
+  "config": {
+    "id": "notificationsDashboards",
+    "zip_name": "notifications-dashboards"
+  },
+  "scripts": {
+    "osd": "node ../../scripts/osd",
+    "opensearch": "node ../../scripts/opensearch",
+    "lint": "node ../../scripts/eslint . && node ../../scripts/stylelint",
+    "start": "yarn plugin_helpers start",
+    "build": "yarn plugin_helpers build",
+    "test:jest": "TZ=UTC ../../node_modules/.bin/jest --config ./test/jest.config.js",
+    "cypress:run": "cypress run",
+    "cypress:open": "cypress open",
+    "plugin_helpers": "node ../../scripts/plugin_helpers",
+    "postbuild": "echo Renaming build artifact to [$npm_package_config_zip_name-$npm_package_version.zip] && mv build/$npm_package_config_id*.zip build/$npm_package_config_zip_name-$npm_package_version.zip"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/enzyme-adapter-react-16": "^1.0.6",
+    "@types/showdown": "^1.9.3",
+    "enzyme-adapter-react-16": "^1.15.5",
+    "jest-dom": "^4.0.0",
+    "cypress": "9.5.4"
+  },
+  "resolutions": {
+    "async": "^3.2.3",
+    "minimist": "^1.2.6",
+    "tough-cookie": "^4.1.3",
+    "@cypress/request": "^3.0.0"
+  },
+  "opensearchDashboards": {
+    "version": "2.13.0"
+  }
+}

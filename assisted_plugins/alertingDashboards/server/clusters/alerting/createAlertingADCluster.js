@@ -1,0 +1,33 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = createAlertingADCluster;
+var _adPlugin = _interopRequireDefault(require("./adPlugin"));
+var _constants = require("../../services/utils/constants");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+function createAlertingADCluster(core, globalConfig) {
+  const {
+    customHeaders,
+    ...rest
+  } = globalConfig.opensearch;
+  return core.opensearch.legacy.createClient(_constants.CLUSTER.AD_ALERTING, {
+    plugins: [_adPlugin.default],
+    // Currently we are overriding any headers with our own since we explicitly required User-Agent to be OpenSearch Dashboards
+    // for integration with our backend plugin.
+    // TODO: Change our required header to x-<Header> to avoid overriding
+    customHeaders: {
+      ...customHeaders,
+      ..._constants.DEFAULT_HEADERS
+    },
+    ...rest
+  });
+}
+module.exports = exports.default;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJfYWRQbHVnaW4iLCJfaW50ZXJvcFJlcXVpcmVEZWZhdWx0IiwicmVxdWlyZSIsIl9jb25zdGFudHMiLCJvYmoiLCJfX2VzTW9kdWxlIiwiZGVmYXVsdCIsImNyZWF0ZUFsZXJ0aW5nQURDbHVzdGVyIiwiY29yZSIsImdsb2JhbENvbmZpZyIsImN1c3RvbUhlYWRlcnMiLCJyZXN0Iiwib3BlbnNlYXJjaCIsImxlZ2FjeSIsImNyZWF0ZUNsaWVudCIsIkNMVVNURVIiLCJBRF9BTEVSVElORyIsInBsdWdpbnMiLCJhbGVydGluZ0FEUGx1Z2luIiwiREVGQVVMVF9IRUFERVJTIiwibW9kdWxlIiwiZXhwb3J0cyJdLCJzb3VyY2VzIjpbImNyZWF0ZUFsZXJ0aW5nQURDbHVzdGVyLmpzIl0sInNvdXJjZXNDb250ZW50IjpbIi8qXG4gKiBDb3B5cmlnaHQgT3BlblNlYXJjaCBDb250cmlidXRvcnNcbiAqIFNQRFgtTGljZW5zZS1JZGVudGlmaWVyOiBBcGFjaGUtMi4wXG4gKi9cblxuaW1wb3J0IGFsZXJ0aW5nQURQbHVnaW4gZnJvbSAnLi9hZFBsdWdpbic7XG5pbXBvcnQgeyBDTFVTVEVSLCBERUZBVUxUX0hFQURFUlMgfSBmcm9tICcuLi8uLi9zZXJ2aWNlcy91dGlscy9jb25zdGFudHMnO1xuXG5leHBvcnQgZGVmYXVsdCBmdW5jdGlvbiBjcmVhdGVBbGVydGluZ0FEQ2x1c3Rlcihjb3JlLCBnbG9iYWxDb25maWcpIHtcbiAgY29uc3QgeyBjdXN0b21IZWFkZXJzLCAuLi5yZXN0IH0gPSBnbG9iYWxDb25maWcub3BlbnNlYXJjaDtcbiAgcmV0dXJuIGNvcmUub3BlbnNlYXJjaC5sZWdhY3kuY3JlYXRlQ2xpZW50KENMVVNURVIuQURfQUxFUlRJTkcsIHtcbiAgICBwbHVnaW5zOiBbYWxlcnRpbmdBRFBsdWdpbl0sXG4gICAgLy8gQ3VycmVudGx5IHdlIGFyZSBvdmVycmlkaW5nIGFueSBoZWFkZXJzIHdpdGggb3VyIG93biBzaW5jZSB3ZSBleHBsaWNpdGx5IHJlcXVpcmVkIFVzZXItQWdlbnQgdG8gYmUgT3BlblNlYXJjaCBEYXNoYm9hcmRzXG4gICAgLy8gZm9yIGludGVncmF0aW9uIHdpdGggb3VyIGJhY2tlbmQgcGx1Z2luLlxuICAgIC8vIFRPRE86IENoYW5nZSBvdXIgcmVxdWlyZWQgaGVhZGVyIHRvIHgtPEhlYWRlcj4gdG8gYXZvaWQgb3ZlcnJpZGluZ1xuICAgIGN1c3RvbUhlYWRlcnM6IHsgLi4uY3VzdG9tSGVhZGVycywgLi4uREVGQVVMVF9IRUFERVJTIH0sXG4gICAgLi4ucmVzdCxcbiAgfSk7XG59XG4iXSwibWFwcGluZ3MiOiI7Ozs7OztBQUtBLElBQUFBLFNBQUEsR0FBQUMsc0JBQUEsQ0FBQUMsT0FBQTtBQUNBLElBQUFDLFVBQUEsR0FBQUQsT0FBQTtBQUEwRSxTQUFBRCx1QkFBQUcsR0FBQSxXQUFBQSxHQUFBLElBQUFBLEdBQUEsQ0FBQUMsVUFBQSxHQUFBRCxHQUFBLEtBQUFFLE9BQUEsRUFBQUYsR0FBQTtBQU4xRTtBQUNBO0FBQ0E7QUFDQTs7QUFLZSxTQUFTRyx1QkFBdUJBLENBQUNDLElBQUksRUFBRUMsWUFBWSxFQUFFO0VBQ2xFLE1BQU07SUFBRUMsYUFBYTtJQUFFLEdBQUdDO0VBQUssQ0FBQyxHQUFHRixZQUFZLENBQUNHLFVBQVU7RUFDMUQsT0FBT0osSUFBSSxDQUFDSSxVQUFVLENBQUNDLE1BQU0sQ0FBQ0MsWUFBWSxDQUFDQyxrQkFBTyxDQUFDQyxXQUFXLEVBQUU7SUFDOURDLE9BQU8sRUFBRSxDQUFDQyxpQkFBZ0IsQ0FBQztJQUMzQjtJQUNBO0lBQ0E7SUFDQVIsYUFBYSxFQUFFO01BQUUsR0FBR0EsYUFBYTtNQUFFLEdBQUdTO0lBQWdCLENBQUM7SUFDdkQsR0FBR1I7RUFDTCxDQUFDLENBQUM7QUFDSjtBQUFDUyxNQUFBLENBQUFDLE9BQUEsR0FBQUEsT0FBQSxDQUFBZixPQUFBIn0=

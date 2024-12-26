@@ -1,0 +1,11 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.updatesRoutes = updatesRoutes;
+var _getUpdates = require("./get-updates");
+function updatesRoutes(router) {
+  (0, _getUpdates.getUpdatesRoute)(router);
+}
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJfZ2V0VXBkYXRlcyIsInJlcXVpcmUiLCJ1cGRhdGVzUm91dGVzIiwicm91dGVyIiwiZ2V0VXBkYXRlc1JvdXRlIl0sInNvdXJjZXMiOlsiaW5kZXgudHMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgSVJvdXRlciB9IGZyb20gJ29wZW5zZWFyY2gtZGFzaGJvYXJkcy9zZXJ2ZXInO1xuaW1wb3J0IHsgZ2V0VXBkYXRlc1JvdXRlIH0gZnJvbSAnLi9nZXQtdXBkYXRlcyc7XG5cbmV4cG9ydCBmdW5jdGlvbiB1cGRhdGVzUm91dGVzKHJvdXRlcjogSVJvdXRlcikge1xuICBnZXRVcGRhdGVzUm91dGUocm91dGVyKTtcbn1cbiJdLCJtYXBwaW5ncyI6Ijs7Ozs7O0FBQ0EsSUFBQUEsV0FBQSxHQUFBQyxPQUFBO0FBRU8sU0FBU0MsYUFBYUEsQ0FBQ0MsTUFBZSxFQUFFO0VBQzdDLElBQUFDLDJCQUFlLEVBQUNELE1BQU0sQ0FBQztBQUN6QiJ9

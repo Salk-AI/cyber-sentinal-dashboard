@@ -1,0 +1,11 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.setCore = exports.getCore = void 0;
+var _common = require("../../../src/plugins/opensearch_dashboards_utils/common");
+const [getCore, setCore] = (0, _common.createGetterSetter)('Core');
+exports.setCore = setCore;
+exports.getCore = getCore;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJfY29tbW9uIiwicmVxdWlyZSIsImdldENvcmUiLCJzZXRDb3JlIiwiY3JlYXRlR2V0dGVyU2V0dGVyIiwiZXhwb3J0cyJdLCJzb3VyY2VzIjpbInBsdWdpbi1zZXJ2aWNlcy50cyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyBDb3JlU3RhcnQgfSBmcm9tICdvcGVuc2VhcmNoLWRhc2hib2FyZHMvc2VydmVyJztcbmltcG9ydCB7IGNyZWF0ZUdldHRlclNldHRlciB9IGZyb20gJy4uLy4uLy4uL3NyYy9wbHVnaW5zL29wZW5zZWFyY2hfZGFzaGJvYXJkc191dGlscy9jb21tb24nO1xuXG5leHBvcnQgY29uc3QgW2dldENvcmUsIHNldENvcmVdID0gY3JlYXRlR2V0dGVyU2V0dGVyPENvcmVTdGFydD4oJ0NvcmUnKTtcbiJdLCJtYXBwaW5ncyI6Ijs7Ozs7O0FBQ0EsSUFBQUEsT0FBQSxHQUFBQyxPQUFBO0FBRU8sTUFBTSxDQUFDQyxPQUFPLEVBQUVDLE9BQU8sQ0FBQyxHQUFHLElBQUFDLDBCQUFrQixFQUFZLE1BQU0sQ0FBQztBQUFDQyxPQUFBLENBQUFGLE9BQUEsR0FBQUEsT0FBQTtBQUFBRSxPQUFBLENBQUFILE9BQUEsR0FBQUEsT0FBQSJ9

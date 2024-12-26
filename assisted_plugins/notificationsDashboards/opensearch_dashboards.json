@@ -1,0 +1,15 @@
+{
+  "id": "notificationsDashboards",
+  "version": "2.13.0.0",
+  "opensearchDashboardsVersion": "2.13.0",
+  "requiredPlugins": [
+    "navigation",
+    "data"
+  ],
+  "optionalPlugins": [
+    "share",
+    "managementOverview"
+  ],
+  "server": true,
+  "ui": true
+}

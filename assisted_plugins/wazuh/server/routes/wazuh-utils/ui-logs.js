@@ -1,0 +1,35 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.UiLogsRoutes = void 0;
+var _controllers = require("../../controllers");
+var _configSchema = require("@osd/config-schema");
+/*
+ * Wazuh app - Module for UI Logs routes
+ * Copyright (C) 2015-2022 Wazuh, Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * Find more information about this on the LICENSE file.
+ */
+
+const UiLogsRoutes = router => {
+  const ctrl = new _controllers.UiLogsCtrl();
+  router.post({
+    path: '/utils/logs/ui',
+    validate: {
+      body: _configSchema.schema.object({
+        message: _configSchema.schema.string(),
+        level: _configSchema.schema.string(),
+        location: _configSchema.schema.string()
+      })
+    }
+  }, async (context, request, response) => await ctrl.createUiLogs(context, request, response));
+};
+exports.UiLogsRoutes = UiLogsRoutes;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJfY29udHJvbGxlcnMiLCJyZXF1aXJlIiwiX2NvbmZpZ1NjaGVtYSIsIlVpTG9nc1JvdXRlcyIsInJvdXRlciIsImN0cmwiLCJVaUxvZ3NDdHJsIiwicG9zdCIsInBhdGgiLCJ2YWxpZGF0ZSIsImJvZHkiLCJzY2hlbWEiLCJvYmplY3QiLCJtZXNzYWdlIiwic3RyaW5nIiwibGV2ZWwiLCJsb2NhdGlvbiIsImNvbnRleHQiLCJyZXF1ZXN0IiwicmVzcG9uc2UiLCJjcmVhdGVVaUxvZ3MiLCJleHBvcnRzIl0sInNvdXJjZXMiOlsidWktbG9ncy50cyJdLCJzb3VyY2VzQ29udGVudCI6WyIvKlxuICogV2F6dWggYXBwIC0gTW9kdWxlIGZvciBVSSBMb2dzIHJvdXRlc1xuICogQ29weXJpZ2h0IChDKSAyMDE1LTIwMjIgV2F6dWgsIEluYy5cbiAqXG4gKiBUaGlzIHByb2dyYW0gaXMgZnJlZSBzb2Z0d2FyZTsgeW91IGNhbiByZWRpc3RyaWJ1dGUgaXQgYW5kL29yIG1vZGlmeVxuICogaXQgdW5kZXIgdGhlIHRlcm1zIG9mIHRoZSBHTlUgR2VuZXJhbCBQdWJsaWMgTGljZW5zZSBhcyBwdWJsaXNoZWQgYnlcbiAqIHRoZSBGcmVlIFNvZnR3YXJlIEZvdW5kYXRpb247IGVpdGhlciB2ZXJzaW9uIDIgb2YgdGhlIExpY2Vuc2UsIG9yXG4gKiAoYXQgeW91ciBvcHRpb24pIGFueSBsYXRlciB2ZXJzaW9uLlxuICpcbiAqIEZpbmQgbW9yZSBpbmZvcm1hdGlvbiBhYm91dCB0aGlzIG9uIHRoZSBMSUNFTlNFIGZpbGUuXG4gKi9cbmltcG9ydCB7IFVpTG9nc0N0cmwgfSBmcm9tICcuLi8uLi9jb250cm9sbGVycyc7XG5pbXBvcnQgeyBJUm91dGVyIH0gZnJvbSAnb3BlbnNlYXJjaF9kYXNoYm9hcmRzL3NlcnZlcic7XG5pbXBvcnQgeyBzY2hlbWEgfSBmcm9tICdAb3NkL2NvbmZpZy1zY2hlbWEnO1xuXG5leHBvcnQgY29uc3QgVWlMb2dzUm91dGVzID0gKHJvdXRlcjogSVJvdXRlcikgPT4ge1xuICBjb25zdCBjdHJsID0gbmV3IFVpTG9nc0N0cmwoKTtcblxuICByb3V0ZXIucG9zdChcbiAgICB7XG4gICAgICBwYXRoOiAnL3V0aWxzL2xvZ3MvdWknLFxuICAgICAgdmFsaWRhdGU6IHtcbiAgICAgICAgYm9keTogc2NoZW1hLm9iamVjdCh7XG4gICAgICAgICAgbWVzc2FnZTogc2NoZW1hLnN0cmluZygpLFxuICAgICAgICAgIGxldmVsOiBzY2hlbWEuc3RyaW5nKCksXG4gICAgICAgICAgbG9jYXRpb246IHNjaGVtYS5zdHJpbmcoKSxcbiAgICAgICAgfSksXG4gICAgICB9LFxuICAgIH0sXG4gICAgYXN5bmMgKGNvbnRleHQsIHJlcXVlc3QsIHJlc3BvbnNlKSA9PlxuICAgICAgYXdhaXQgY3RybC5jcmVhdGVVaUxvZ3MoY29udGV4dCwgcmVxdWVzdCwgcmVzcG9uc2UpLFxuICApO1xufTtcbiJdLCJtYXBwaW5ncyI6Ijs7Ozs7O0FBV0EsSUFBQUEsWUFBQSxHQUFBQyxPQUFBO0FBRUEsSUFBQUMsYUFBQSxHQUFBRCxPQUFBO0FBYkE7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTs7QUFLTyxNQUFNRSxZQUFZLEdBQUlDLE1BQWUsSUFBSztFQUMvQyxNQUFNQyxJQUFJLEdBQUcsSUFBSUMsdUJBQVUsQ0FBQyxDQUFDO0VBRTdCRixNQUFNLENBQUNHLElBQUksQ0FDVDtJQUNFQyxJQUFJLEVBQUUsZ0JBQWdCO0lBQ3RCQyxRQUFRLEVBQUU7TUFDUkMsSUFBSSxFQUFFQyxvQkFBTSxDQUFDQyxNQUFNLENBQUM7UUFDbEJDLE9BQU8sRUFBRUYsb0JBQU0sQ0FBQ0csTUFBTSxDQUFDLENBQUM7UUFDeEJDLEtBQUssRUFBRUosb0JBQU0sQ0FBQ0csTUFBTSxDQUFDLENBQUM7UUFDdEJFLFFBQVEsRUFBRUwsb0JBQU0sQ0FBQ0csTUFBTSxDQUFDO01BQzFCLENBQUM7SUFDSDtFQUNGLENBQUMsRUFDRCxPQUFPRyxPQUFPLEVBQUVDLE9BQU8sRUFBRUMsUUFBUSxLQUMvQixNQUFNZCxJQUFJLENBQUNlLFlBQVksQ0FBQ0gsT0FBTyxFQUFFQyxPQUFPLEVBQUVDLFFBQVEsQ0FDdEQsQ0FBQztBQUNILENBQUM7QUFBQ0UsT0FBQSxDQUFBbEIsWUFBQSxHQUFBQSxZQUFBIn0=

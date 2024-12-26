@@ -1,0 +1,20 @@
+{
+  "id": "customImportMapDashboards",
+  "version": "2.13.0.0",
+  "opensearchDashboardsVersion": "2.13.0",
+  "server": true,
+  "ui": true,
+  "requiredPlugins": [
+    "regionMap",
+    "opensearchDashboardsReact",
+    "opensearchDashboardsUtils",
+    "navigation",
+    "savedObjects",
+    "data",
+    "embeddable",
+    "visualizations"
+  ],
+  "optionalPlugins": [
+    "home"
+  ]
+}

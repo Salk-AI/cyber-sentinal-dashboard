@@ -1,0 +1,28 @@
+"use strict";
+
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+process.env.TZ = 'UTC';
+module.exports = {
+  rootDir: '../',
+  setupFiles: ['<rootDir>/test/polyfills.js', '<rootDir>/test/setupTests.js', '<rootDir>/test/enzyme.js'],
+  setupFilesAfterEnv: ['<rootDir>/test/setup.jest.js'],
+  modulePaths: ['node_modules', `../../node_modules`],
+  coverageDirectory: './coverage',
+  moduleNameMapper: {
+    '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$': '<rootDir>/test/mocks/styleMock.js',
+    '\\.(css|less|scss)$': '<rootDir>/test/mocks/styleMock.js',
+    '^ui/(.*)': '<rootDir>/../../src/legacy/ui/public/$1/'
+  },
+  snapshotSerializers: ['../../node_modules/enzyme-to-json/serializer'],
+  coverageReporters: ['lcov', 'text', 'cobertura'],
+  testMatch: ['**/*.test.js', '**/*.test.ts', '**/*.test.tsx'],
+  coveragePathIgnorePatterns: ['<rootDir>/build/', '<rootDir>/node_modules/', '<rootDir>/test/'],
+  clearMocks: true,
+  testPathIgnorePatterns: ['<rootDir>/build/', '<rootDir>/node_modules/'],
+  modulePathIgnorePatterns: [],
+  testEnvironment: 'jest-environment-jsdom'
+};
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJwcm9jZXNzIiwiZW52IiwiVFoiLCJtb2R1bGUiLCJleHBvcnRzIiwicm9vdERpciIsInNldHVwRmlsZXMiLCJzZXR1cEZpbGVzQWZ0ZXJFbnYiLCJtb2R1bGVQYXRocyIsImNvdmVyYWdlRGlyZWN0b3J5IiwibW9kdWxlTmFtZU1hcHBlciIsInNuYXBzaG90U2VyaWFsaXplcnMiLCJjb3ZlcmFnZVJlcG9ydGVycyIsInRlc3RNYXRjaCIsImNvdmVyYWdlUGF0aElnbm9yZVBhdHRlcm5zIiwiY2xlYXJNb2NrcyIsInRlc3RQYXRoSWdub3JlUGF0dGVybnMiLCJtb2R1bGVQYXRoSWdub3JlUGF0dGVybnMiLCJ0ZXN0RW52aXJvbm1lbnQiXSwic291cmNlcyI6WyJqZXN0LmNvbmZpZy5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyIvKlxuICogQ29weXJpZ2h0IE9wZW5TZWFyY2ggQ29udHJpYnV0b3JzXG4gKiBTUERYLUxpY2Vuc2UtSWRlbnRpZmllcjogQXBhY2hlLTIuMFxuICovXG5wcm9jZXNzLmVudi5UWiA9ICdVVEMnO1xubW9kdWxlLmV4cG9ydHMgPSB7XG4gIHJvb3REaXI6ICcuLi8nLFxuICBzZXR1cEZpbGVzOiBbXG4gICAgJzxyb290RGlyPi90ZXN0L3BvbHlmaWxscy5qcycsXG4gICAgJzxyb290RGlyPi90ZXN0L3NldHVwVGVzdHMuanMnLFxuICAgICc8cm9vdERpcj4vdGVzdC9lbnp5bWUuanMnLFxuICBdLFxuICBzZXR1cEZpbGVzQWZ0ZXJFbnY6IFsnPHJvb3REaXI+L3Rlc3Qvc2V0dXAuamVzdC5qcyddLFxuICBtb2R1bGVQYXRoczogWydub2RlX21vZHVsZXMnLCBgLi4vLi4vbm9kZV9tb2R1bGVzYF0sXG4gIGNvdmVyYWdlRGlyZWN0b3J5OiAnLi9jb3ZlcmFnZScsXG4gIG1vZHVsZU5hbWVNYXBwZXI6IHtcbiAgICAnXFxcXC4oanBnfGpwZWd8cG5nfGdpZnxlb3R8b3RmfHdlYnB8c3ZnfHR0Znx3b2ZmfHdvZmYyfG1wNHx3ZWJtfHdhdnxtcDN8bTRhfGFhY3xvZ2EpJCc6XG4gICAgICAnPHJvb3REaXI+L3Rlc3QvbW9ja3Mvc3R5bGVNb2NrLmpzJyxcbiAgICAnXFxcXC4oY3NzfGxlc3N8c2NzcykkJzogJzxyb290RGlyPi90ZXN0L21vY2tzL3N0eWxlTW9jay5qcycsXG4gICAgJ151aS8oLiopJzogJzxyb290RGlyPi8uLi8uLi9zcmMvbGVnYWN5L3VpL3B1YmxpYy8kMS8nLFxuICB9LFxuICBzbmFwc2hvdFNlcmlhbGl6ZXJzOiBbJy4uLy4uL25vZGVfbW9kdWxlcy9lbnp5bWUtdG8tanNvbi9zZXJpYWxpemVyJ10sXG4gIGNvdmVyYWdlUmVwb3J0ZXJzOiBbJ2xjb3YnLCAndGV4dCcsICdjb2JlcnR1cmEnXSxcbiAgdGVzdE1hdGNoOiBbJyoqLyoudGVzdC5qcycsICcqKi8qLnRlc3QudHMnLCAnKiovKi50ZXN0LnRzeCddLFxuICBjb3ZlcmFnZVBhdGhJZ25vcmVQYXR0ZXJuczogWyc8cm9vdERpcj4vYnVpbGQvJywgJzxyb290RGlyPi9ub2RlX21vZHVsZXMvJywgJzxyb290RGlyPi90ZXN0LyddLFxuICBjbGVhck1vY2tzOiB0cnVlLFxuICB0ZXN0UGF0aElnbm9yZVBhdHRlcm5zOiBbJzxyb290RGlyPi9idWlsZC8nLCAnPHJvb3REaXI+L25vZGVfbW9kdWxlcy8nXSxcbiAgbW9kdWxlUGF0aElnbm9yZVBhdHRlcm5zOiBbXSxcbiAgdGVzdEVudmlyb25tZW50OiAnamVzdC1lbnZpcm9ubWVudC1qc2RvbScsXG59O1xuIl0sIm1hcHBpbmdzIjoiOztBQUFBO0FBQ0E7QUFDQTtBQUNBO0FBQ0FBLE9BQU8sQ0FBQ0MsR0FBRyxDQUFDQyxFQUFFLEdBQUcsS0FBSztBQUN0QkMsTUFBTSxDQUFDQyxPQUFPLEdBQUc7RUFDZkMsT0FBTyxFQUFFLEtBQUs7RUFDZEMsVUFBVSxFQUFFLENBQ1YsNkJBQTZCLEVBQzdCLDhCQUE4QixFQUM5QiwwQkFBMEIsQ0FDM0I7RUFDREMsa0JBQWtCLEVBQUUsQ0FBQyw4QkFBOEIsQ0FBQztFQUNwREMsV0FBVyxFQUFFLENBQUMsY0FBYyxFQUFHLG9CQUFtQixDQUFDO0VBQ25EQyxpQkFBaUIsRUFBRSxZQUFZO0VBQy9CQyxnQkFBZ0IsRUFBRTtJQUNoQixxRkFBcUYsRUFDbkYsbUNBQW1DO0lBQ3JDLHFCQUFxQixFQUFFLG1DQUFtQztJQUMxRCxVQUFVLEVBQUU7RUFDZCxDQUFDO0VBQ0RDLG1CQUFtQixFQUFFLENBQUMsOENBQThDLENBQUM7RUFDckVDLGlCQUFpQixFQUFFLENBQUMsTUFBTSxFQUFFLE1BQU0sRUFBRSxXQUFXLENBQUM7RUFDaERDLFNBQVMsRUFBRSxDQUFDLGNBQWMsRUFBRSxjQUFjLEVBQUUsZUFBZSxDQUFDO0VBQzVEQywwQkFBMEIsRUFBRSxDQUFDLGtCQUFrQixFQUFFLHlCQUF5QixFQUFFLGlCQUFpQixDQUFDO0VBQzlGQyxVQUFVLEVBQUUsSUFBSTtFQUNoQkMsc0JBQXNCLEVBQUUsQ0FBQyxrQkFBa0IsRUFBRSx5QkFBeUIsQ0FBQztFQUN2RUMsd0JBQXdCLEVBQUUsRUFBRTtFQUM1QkMsZUFBZSxFQUFFO0FBQ25CLENBQUMifQ==
