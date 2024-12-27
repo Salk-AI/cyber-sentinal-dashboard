@@ -67,8 +67,8 @@ The following visual representation explains the interaction between Wazuh compo
 Make the script executable and run it:
 
 ```bash
-chmod +x wazuh-setup.sh
-sudo ./wazuh-setup.sh [OPTIONS]
+chmod +x wazuh_setup.sh
+sudo ./wazuh_setup.sh [OPTIONS]
 ```
 
 ---
@@ -80,7 +80,7 @@ sudo ./wazuh-setup.sh [OPTIONS]
 To install all components with their respective IP addresses:
 
 ```bash
-sudo ./wazuh-setup.sh --distro <distro> --action install --component all --indexer-ip <indexer-ip> --manager-ip <manager-ip> --dashboard-ip <dashboard-ip> --filebeat-ip <filebeat-ip>
+sudo ./wazuh_setup.sh --distro <distro> --action install --component all --indexer-ip <indexer-ip> --manager-ip <manager-ip> --dashboard-ip <dashboard-ip> --filebeat-ip <filebeat-ip>
 ```
 
 ### Installing Individual Components
@@ -89,22 +89,22 @@ Install components individually as follows:
 
 #### Install Indexer
 ```bash
-sudo ./wazuh-setup.sh --distro <distro> --action install --component indexer --indexer-ip <indexer-ip>
+sudo ./wazuh_setup.sh --distro <distro> --action install --component indexer --indexer-ip <indexer-ip>
 ```
 
 #### Install Manager
 ```bash
-sudo ./wazuh-setup.sh --distro <distro> --action install --component manager
+sudo ./wazuh_setup.sh --distro <distro> --action install --component manager
 ```
 
 #### Install Filebeat
 ```bash
-sudo ./wazuh-setup.sh --distro <distro> --action install --component filebeat --filebeat-ip <filebeat-ip>
+sudo ./wazuh_setup.sh --distro <distro> --action install --component filebeat --filebeat-ip <filebeat-ip>
 ```
 
 #### Install Dashboard
 ```bash
-sudo ./wazuh-setup.sh --distro <distro> --action install --component dashboard --dashboard-ip <dashboard-ip>
+sudo ./wazuh_setup.sh --distro <distro> --action install --component dashboard --dashboard-ip <dashboard-ip>
 ```
 
 ### Uninstalling Components
@@ -112,7 +112,7 @@ sudo ./wazuh-setup.sh --distro <distro> --action install --component dashboard -
 To uninstall any component:
 
 ```bash
-sudo ./wazuh-setup.sh --distro <distro> --action uninstall --component <component>
+sudo ./wazuh_setup.sh --distro <distro> --action uninstall --component <component>
 ```
 
 Replace `<component>` with one of: `all`, `indexer`, `manager`, `filebeat`, or `dashboard`.
@@ -122,19 +122,19 @@ Replace `<component>` with one of: `all`, `indexer`, `manager`, `filebeat`, or `
 Build a package for a specific distribution and version:
 
 ```bash
-sudo ./wazuh-setup.sh --build-package <distro> <version>
+sudo ./wazuh_setup.sh --build-package <distro> <version>
 ```
 
 ### Generating Files
 
 #### Generate Offline Installation Files
 ```bash
-sudo ./wazuh-setup.sh --offline-files <distro>
+sudo ./wazuh_setup.sh --offline-files <distro>
 ```
 
 #### Generate Installation Files with IPs
 ```bash
-sudo ./wazuh-setup.sh --generate-install-files <indexer-ip> <manager-ip> <dashboard-ip>
+sudo ./wazuh_setup.sh --generate-install-files <indexer-ip> <manager-ip> <dashboard-ip>
 ```
 
 ---
