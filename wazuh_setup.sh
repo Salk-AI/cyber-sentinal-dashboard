@@ -148,13 +148,16 @@ function generate_offline_files() {
     fi
 
     log "Successfully generated offline files for $distro distribution"
+    sudo chmod 777 -R ./wazuh-offline/
     return 0
 }
 
 
 
 function generate_install_files() {
-    local ip_address="$1"
+    local indexer_ip_address="$1"
+    local manager_ip_address="$2"
+    local dashboard_ip_address="$3"
 
     # Validate input
     if [[ -z "$ip_address" ]]; then
@@ -171,9 +174,9 @@ function generate_install_files() {
     log "Configuring installation files..."
     # Update all IP placeholders in one pass
     if ! sed -i \
-        -e "s/<indexer-node-ip>/${ip_address}/g" \
-        -e "s/<wazuh-manager-ip>/${ip_address}/g" \
-        -e "s/<dashboard-node-ip>/${ip_address}/g" \
+        -e "s/<indexer-node-ip>/${indexer_ip_address}/g" \
+        -e "s/<wazuh-manager-ip>/${manager_ip_address}/g" \
+        -e "s/<dashboard-node-ip>/${dashboard_ip_address}/g" \
         config.yml; then
         error "Failed to update config.yml"
         return 1
@@ -212,7 +215,7 @@ function install_indexer() {
 
     log "Installing Wazuh indexer..."
     if [[ "$distro" == "deb" ]]; then
-        if ! sudo dpkg -i ./wazuh-offline/wazuh-packages/wazuh-indexer_4.9.2-1_amd64.deb; then
+        if ! sudo dpkg -i ./wazuh-offline/wazuh-packages/wazuh-indexer*.deb; then
             error "Failed to install Wazuh indexer package"
             return 1
         fi
@@ -254,7 +257,11 @@ function install_indexer() {
 
     # Set proper permissions
     sudo chmod 500 "$certs_dir"
-    sudo chmod 400 "$certs_dir"/{indexer,indexer-key,admin,admin-key,root-ca}.pem
+    sudo chmod 400 "$certs_dir"/indexer.pem
+    sudo chmod 400 "$certs_dir"/indexer-key.pem
+    sudo chmod 400 "$certs_dir"/admin.pem
+    sudo chmod 400 "$certs_dir"/admin-key.pem
+    sudo chmod 400 "$certs_dir"/root-ca.pem
     sudo chown -R wazuh-indexer:wazuh-indexer "$certs_dir"
 
     # Configure indexer
@@ -297,7 +304,7 @@ function install_manager() {
             return 1
         fi
     else
-        if ! sudo dpkg -i ./wazuh-offline/wazuh-packages/wazuh-manager_4.9.2-1_amd64.deb; then
+        if ! sudo dpkg -i ./wazuh-offline/wazuh-packages/wazuh-manager*.deb; then
             error "Failed to install Wazuh manager package"
             return 1
         fi
@@ -341,7 +348,7 @@ function install_filebeat() {
 
     log "Installing Filebeat..."
     if [ "$distro" = "deb" ]; then
-        if ! sudo dpkg -i ./wazuh-offline/wazuh-packages/filebeat-oss-7.10.2-amd64.deb; then
+        if ! sudo dpkg -i ./wazuh-offline/wazuh-packages/filebeat*.deb; then
             error "Failed to install Filebeat package"
             return 1
         fi
@@ -462,7 +469,9 @@ function install_dashboard() {
 
     # Set proper permissions
     sudo chmod 500 "$CERT_DIR"
-    sudo chmod 400 "$CERT_DIR"/dashboard{-key,}.pem "$CERT_DIR/root-ca.pem"
+    sudo chmod 400 "$CERT_DIR"/dashboard.pem
+    sudo chmod 400 "$CERT_DIR"/dashboard-key.pem
+    sudo chmod 400 "$CERT_DIR"/root-ca.pem
     sudo chown -R wazuh-dashboard:wazuh-dashboard "$CERT_DIR"
 
     # Update configuration
@@ -516,32 +525,119 @@ function generate_offline_files(){
 }
 
 
+function build_package(){
+
+    local distro="$1"
+    local version="$2"
+    log "Started building package..."
+
+    echo -e "${YELLOW}Cleaning up plugins folder..${NC}"
+    rm -rf plugins/*
+    rm -rf target/
+    rm -rf node_modules/
+
+    nvm install $(cat .nvmrc)
+    nvm use $(cat .nvmrc)
+
+    yarn osd clean
+    yarn osd bootstrap
+    yarn build --linux --skip-os-packages --release
+
+
+    log "Cloning wazuh-security-dashboards-plugin...."
+    cd plugins/
+    git clone -b v4.9.2 https://github.com/wazuh/wazuh-security-dashboards-plugin.git
+    cd wazuh-security-dashboards-plugin/
+    yarn
+    yarn build
+
+    log "Wazuh security dashboard plugin installation completed..."
+
+    log "Cloning wazuh dashboard plugins..."
+    cd ../
+    git clone -b prathamesh_dev https://github.com/Salk-AI/wazuh-dashboard-plugins.git
+    cd wazuh-dashboard-plugins/
+
+    cp -r plugins/* ../
+    cd ../main
+    yarn
+    echo "2.13.0" | yarn build
+    cd ../wazuh-core/
+    yarn
+    echo "2.13.0" | yarn build
+    cd ../wazuh-check-updates/
+    yarn
+    echo "2.13.0" | yarn build
+
+    log "Wazuh dashboard plugin installation completed..."
+
+    log "Zipping the packages..."
+    cd ../../../
+    if [ -d "packages" ]; then
+        rm -rf packages/
+    fi
+
+    mkdir packages
+    cd packages
+    local path_to_zip=$(pwd)
+    zip -r -j ./dashboard-package.zip ../wazuh-dashboard/target/opensearch-dashboards-2.13.0-linux-x64.tar.gz
+    zip -r -j ./security-package.zip ../wazuh-dashboard/plugins/wazuh-security-dashboards-plugin/build/security-dashboards-2.13.0.0.zip
+    zip -r -j ./wazuh-package.zip ../wazuh-dashboard/plugins/wazuh-check-updates/build/wazuhCheckUpdates-2.13.0.zip ../wazuh-dashboard/plugins/main/build/wazuh-2.13.0.zip ../wazuh-dashboard/plugins/wazuh-core/build/wazuhCore-2.13.0.zip
+
+    log "Started building package..."
+    cd ../wazuh-dashboard/dev-tools/build-packages/
+    ./build-packages.sh -v $version -r 1 --$distro -a file://$path_to_zip/wazuh-package.zip -s file://$path_to_zip/security-package.zip -b file://$path_to_zip/dashboard-package.zip
+}
+
 main() {
     # Define variables
     local distro=""
-    local ip_address=""
     local to_do=""
     local component=""
+    local indexer_ip=""
+    local manager_ip=""
+    local dashboard_ip=""
+    local filebeat_ip=""
 
     # Parse named arguments
     while [[ $# -gt 0 ]]; do
         case "$1" in
+            --build-package)
+                distro="$2"
+                version="$3"
+                build_package "$distro" "$version"
+                exit 0
+                ;;
             --offline-files)
                 distro="$2"
                 generate_offline_files "$distro"
                 exit 0
                 ;;
             --generate-install-files)
-                ip_address="$2"
-                generate_install_files "$ip_address"
+                indexer_ip="$2"
+                manager_ip="$3"
+                dashboard_ip="$4"
+                generate_install_files "$indexer_ip" "$manager_ip" "$dashboard_ip"
                 exit 0
                 ;;
             --distro)
                 distro="$2"
                 shift 2
                 ;;
-            --ip)
-                ip_address="$2"
+            --indexer-ip)
+                indexer_ip="$2"
+                shift 2
+                ;;
+            --manager-ip)
+                manager_ip="$2"
+                shift 2
+                ;;
+            --dashboard-ip)
+                dashboard_ip="$2"
+                shift 2
+                ;;
+            --filebeat-ip)
+                filebeat_ip="$2"
                 shift 2
                 ;;
             --action)
@@ -560,8 +656,8 @@ main() {
     done
 
     # Validate required arguments
-    if [[ -z "$distro" || -z "$ip_address" ]]; then
-        echo -e "${RED}Error: --distro and --ip are required arguments.${NC}"
+    if [[ -z "$distro" ]]; then
+        echo -e "${RED}Error: --distro is required.${NC}"
         exit 1
     fi
 
@@ -577,60 +673,47 @@ main() {
         exit 0
     fi
 
-    # Download and prepare installation files
-    # echo -e "${YELLOW}Downloading Wazuh installation files...${NC}"
-    # if ! curl -sO https://packages.wazuh.com/4.9/wazuh-install.sh; then
-    #     echo -e "${RED}Error: Failed to download wazuh-install.sh.${NC}"
-    #     exit 1
-    # fi
-
-    # chmod 744 wazuh-install.sh
-
-    # echo -e "${YELLOW}Cleaning up existing installation files...${NC}"
-    # sudo rm -rf wazuh-offline/ wazuh-install-files/ wazuh-offline.tar.gz wazuh-install-files.tar
-
-    # # Generate required files
-    # if ! generate_offline_files "$distro"; then
-    #     echo -e "${RED}Error: Failed to generate offline files.${NC}"
-    #     exit 1
-    # fi
-
-    # if ! generate_install_files "$ip_address"; then
-    #     echo -e "${RED}Error: Failed to generate installation files.${NC}"
-    #     exit 1
-    # fi
-
-    # echo -e "${YELLOW}Extracting installation files...${NC}"
-    # if ! sudo tar xf wazuh-offline.tar.gz || ! sudo tar xf wazuh-install-files.tar; then
-    #     echo -e "${RED}Error: Failed to extract tar files.${NC}"
-    #     exit 1
-    # fi
-
     # Install components based on selection
     echo -e "${GREEN}Starting installation process...${NC}"
     case "$component" in
         all)
+            if [[ -z "$indexer_ip" || -z "$manager_ip" || -z "$dashboard_ip" || -z "$filebeat_ip" ]]; then
+                echo -e "${RED}Error: All IP addresses required for full installation.${NC}"
+                exit 1
+            fi
             echo -e "${YELLOW}Installing all Wazuh components...${NC}"
-            install_indexer "$ip_address" "$distro" && \
+            install_indexer "$indexer_ip" "$distro" && \
             install_manager "$distro" && \
-            install_filebeat "$ip_address" "$distro" && \
-            install_dashboard "$ip_address" "$distro"
+            install_filebeat "$filebeat_ip" "$distro" && \
+            install_dashboard "$dashboard_ip" "$distro"
             ;;
         indexer)
+            if [[ -z "$indexer_ip" ]]; then
+                echo -e "${RED}Error: --indexer-ip required for indexer installation.${NC}"
+                exit 1
+            fi
             echo -e "${YELLOW}Installing Wazuh indexer...${NC}"
-            install_indexer "$ip_address" "$distro"
+            install_indexer "$indexer_ip" "$distro"
             ;;
         manager)
             echo -e "${YELLOW}Installing Wazuh manager...${NC}"
             install_manager "$distro"
             ;;
         filebeat)
+            if [[ -z "$filebeat_ip" ]]; then
+                echo -e "${RED}Error: --filebeat-ip required for filebeat installation.${NC}"
+                exit 1
+            fi
             echo -e "${YELLOW}Installing Filebeat...${NC}"
-            install_filebeat "$ip_address" "$distro"
+            install_filebeat "$filebeat_ip" "$distro"
             ;;
         dashboard)
+            if [[ -z "$dashboard_ip" ]]; then
+                echo -e "${RED}Error: --dashboard-ip required for dashboard installation.${NC}"
+                exit 1
+            fi
             echo -e "${YELLOW}Installing Wazuh dashboard...${NC}"
-            install_dashboard "$ip_address" "$distro"
+            install_dashboard "$dashboard_ip" "$distro"
             ;;
         *)
             echo -e "${RED}Error: Invalid component. Use one of: all, indexer, manager, filebeat, dashboard.${NC}"

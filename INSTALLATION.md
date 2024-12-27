@@ -1,7 +1,7 @@
 
-# Wazuh Installation Documentation
+# Wazuh Installation and Management Script
 
-This guide provides step-by-step instructions to install and set up Wazuh locally. It also offers insights into its architecture and components for a comprehensive understanding.
+This guide provides comprehensive instructions for installing, managing, and understanding Wazuh. It includes a detailed explanation of the bash script functionalities, Wazuh architecture, and step-by-step usage for both individual and full installations.
 
 ---
 
@@ -10,99 +10,139 @@ This guide provides step-by-step instructions to install and set up Wazuh locall
 1. [Understanding Wazuh](#understanding-wazuh)
    - [How It Works](#how-it-works)
    - [Architecture](#architecture)
-2. [Installing Wazuh Locally](#installing-wazuh-locally)
-   - [Bash Script Overview](#bash-script-overview)
+2. [Script Overview](#script-overview)
+   - [Features](#features)
+   - [Requirements](#requirements)
+   - [General Usage](#general-usage)
+3. [Commands and Examples](#commands-and-examples)
    - [Installing All Components](#installing-all-components)
    - [Installing Individual Components](#installing-individual-components)
-3. [Accessing the Dashboard](#accessing-the-dashboard)
-4. [Support and Contribution](#support-and-contribution)
+   - [Uninstalling Components](#uninstalling-components)
+   - [Building Packages](#building-packages)
+   - [Generating Files](#generating-files)
+4. [Accessing the Dashboard](#accessing-the-dashboard)
+5. [Support and Contribution](#support-and-contribution)
 
 ---
 
 ## Understanding Wazuh
 
-Wazuh is a powerful open-source security platform that provides capabilities for **threat detection**, **compliance management**, and **incident response**. 
+Wazuh is a powerful open-source security platform providing **threat detection**, **compliance management**, and **incident response** capabilities.
 
 ### How It Works
 
-Wazuh operates on three primary components:
+Wazuh operates through three main components:
 
-1. **Indexer**: Stores and indexes data for analysis and search purposes.
-2. **Manager (or Server)**: Handles agent communications, log analysis, and event correlation.
-3. **Dashboard**: Provides a user-friendly interface for monitoring and managing the platform.
+1. **Indexer**: Stores and indexes data for analysis and search.
+2. **Manager**: Handles agent communications, log analysis, and event correlation.
+3. **Dashboard**: Offers a user-friendly interface for monitoring and managing Wazuh.
 
 ---
 
 ### Architecture
 
-Below is a visual representation of Wazuh’s deployment architecture:
+The following visual representation explains the interaction between Wazuh components:
 
 ![Wazuh Architecture](assets/deployment-architecture1.png)
 
-The architecture showcases how different components interact to deliver a seamless security monitoring experience.
-
 ---
 
-## Installing Wazuh Locally
+## Script Overview
 
-To simplify the installation process, Wazuh provides a bash script that can be used to install, uninstall, or manage its components.
+### Features
 
-### Prerequisites
+- Install Wazuh components: **Indexer**, **Manager**, **Filebeat**, and **Dashboard**.
+- Uninstall specific components.
+- Generate offline installation files.
+- Build packages for specific distributions and versions.
+- Generate installation files using specified IP addresses.
 
-- **Non-root User**: Ensure you are running the script as a non-root user.
-- **Private IP Address**: If running on a virtual machine, use the private IP address of the VM. Access the dashboard using the public IP.
+### Requirements
 
----
+- **Root Privileges**: Run the script with `sudo` or as the root user.
+- **Dependencies**: Ensure dependencies for Wazuh are pre-installed.
 
-### Bash Script Overview
+### General Usage
 
-The bash file (`wazuh-setup.sh`) allows you to configure and manage Wazuh components. Below are the key parameters:
+Make the script executable and run it:
 
-- **`--distro`**: Specify your Linux distribution (`rpm` for RHEL-based or `deb` for Debian-based systems).
-- **`--ip`**: Provide the private IP address of your machine.
-- **`--action`**: Specify the action to perform (`install` or `uninstall`).
-- **`--component`**: Choose the component to manage (`all`, `indexer`, `manager`, `filebeat`, or `dashboard`).
-
----
-
-### Installing All Components
-
-To install all components in one go, use the following command:
 ```bash
-bash wazuh-setup.sh --distro rpm/deb --ip <your-private-ip> --action install --component all
+chmod +x wazuh-setup.sh
+sudo ./wazuh-setup.sh [OPTIONS]
 ```
 
 ---
 
+## Commands and Examples
+
+### Installing All Components
+
+To install all components with their respective IP addresses:
+
+```bash
+sudo ./wazuh-setup.sh --distro <distro> --action install --component all --indexer-ip <indexer-ip> --manager-ip <manager-ip> --dashboard-ip <dashboard-ip> --filebeat-ip <filebeat-ip>
+```
+
 ### Installing Individual Components
 
-You can also install components individually. Use the commands below for each:
+Install components individually as follows:
 
 #### Install Indexer
 ```bash
-bash wazuh-setup.sh --distro rpm/deb --ip <your-private-ip> --action install --component indexer
+sudo ./wazuh-setup.sh --distro <distro> --action install --component indexer --indexer-ip <indexer-ip>
 ```
 
 #### Install Manager
 ```bash
-bash wazuh-setup.sh --distro rpm/deb --ip <your-private-ip> --action install --component manager
+sudo ./wazuh-setup.sh --distro <distro> --action install --component manager
 ```
 
 #### Install Filebeat
 ```bash
-bash wazuh-setup.sh --distro rpm/deb --ip <your-private-ip> --action install --component filebeat
+sudo ./wazuh-setup.sh --distro <distro> --action install --component filebeat --filebeat-ip <filebeat-ip>
 ```
 
 #### Install Dashboard
 ```bash
-bash wazuh-setup.sh --distro rpm/deb --ip <your-private-ip> --action install --component dashboard
+sudo ./wazuh-setup.sh --distro <distro> --action install --component dashboard --dashboard-ip <dashboard-ip>
+```
+
+### Uninstalling Components
+
+To uninstall any component:
+
+```bash
+sudo ./wazuh-setup.sh --distro <distro> --action uninstall --component <component>
+```
+
+Replace `<component>` with one of: `all`, `indexer`, `manager`, `filebeat`, or `dashboard`.
+
+### Building Packages
+
+Build a package for a specific distribution and version:
+
+```bash
+sudo ./wazuh-setup.sh --build-package <distro> <version>
+```
+
+### Generating Files
+
+#### Generate Offline Installation Files
+```bash
+sudo ./wazuh-setup.sh --offline-files <distro>
+```
+
+#### Generate Installation Files with IPs
+```bash
+sudo ./wazuh-setup.sh --generate-install-files <indexer-ip> <manager-ip> <dashboard-ip>
 ```
 
 ---
 
 ## Accessing the Dashboard
 
-Once the setup is complete, you can access the Wazuh Dashboard at:  
+After installation, access the Wazuh Dashboard using:
+
 **[http://localhost](http://localhost)**
 
 ### Default Credentials:
@@ -113,13 +153,13 @@ Once the setup is complete, you can access the Wazuh Dashboard at:
 
 ## Support and Contribution
 
-For any issues during installation or setup, feel free to:
-- Raise an issue in the repository.
-- Refer to the [official Wazuh documentation](https://documentation.wazuh.com/).
-- Contact the maintainers for guidance.
+For any issues during installation or setup, refer to:
 
-If you wish to contribute, ensure that:
-- Your code adheres to the existing standards.
-- Proper testing is performed before submitting changes.
+- [Official Wazuh Documentation](https://documentation.wazuh.com/)
+- Raise an issue in this repository.
 
-> **Happy Securing!** 🚀
+If you wish to contribute:
+- Ensure your code adheres to existing standards.
+- Test your changes before submitting a pull request.
+
+> **Secure your systems with Wazuh! 🚀**
