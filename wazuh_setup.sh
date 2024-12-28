@@ -536,9 +536,6 @@ function build_package(){
     rm -rf target/
     rm -rf node_modules/
 
-    nvm install $(cat .nvmrc)
-    nvm use $(cat .nvmrc)
-
     yarn osd clean
     yarn osd bootstrap
     yarn build --linux --skip-os-packages --release
