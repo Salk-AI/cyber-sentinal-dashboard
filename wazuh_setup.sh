@@ -544,7 +544,7 @@ function build_package(){
     log "Cloning wazuh-security-dashboards-plugin...."
     cd plugins/
     git clone -b v4.9.2 https://github.com/Salk-AI/cyber-sentinal-security-dashboards-plugin.git
-    cd wazuh-security-dashboards-plugin/
+    cd cyber-sentinal-security-dashboards-plugin/
     yarn
     yarn build
 
@@ -553,7 +553,7 @@ function build_package(){
     log "Cloning wazuh dashboard plugins..."
     cd ../
     git clone -b prathamesh_dev https://github.com/Salk-AI/cyber-sentinal-dashboard-plugins.git
-    cd wazuh-dashboard-plugins/
+    cd cyber-sentinal-dashboard-plugins/
 
     cp -r plugins/* ../
     cd ../main
