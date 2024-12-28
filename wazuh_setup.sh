@@ -11,7 +11,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m'
 
 readonly INDEXER_CONFIG_FILE="/etc/wazuh-indexer/opensearch.yml"
-readonly FILEBEAT_CONFIG_FILE="/etc/filebeat/filebeat.yml" 
+readonly FILEBEAT_CONFIG_FILE="/etc/filebeat/filebeat.yml"
 readonly DASHBOARD_CONFIG_FILE="/etc/wazuh-dashboard/opensearch_dashboards.yml"
 readonly WAZUH_CONFIG_FILE="/usr/share/wazuh-dashboard/data/wazuh/config/wazuh.yml"
 
@@ -40,7 +40,7 @@ check_root() {
 # Check required dependencies
 check_dependencies() {
     local deps=("curl" "tar" "setcap" "gnupg")
-    
+
     for dep in "${deps[@]}"; do
         if ! command -v "$dep" &> /dev/null; then
             error "$dep is required but not installed"
@@ -69,7 +69,7 @@ function delete_components() {
     cleanup_component() {
         local name="$1"
         local paths=("$@")
-        
+
         if [[ "$distro" == "rpm" ]]; then
             sudo yum remove "wazuh-$name" -y
         else
@@ -89,27 +89,27 @@ function delete_components() {
             log "Performing complete uninstallation..."
             sudo bash wazuh-install.sh --uninstall
             ;;
-            
+
         'indexer')
             cleanup_component "indexer" \
                 "/var/lib/wazuh-indexer" \
                 "/usr/share/wazuh-indexer" \
                 "/etc/wazuh-indexer"
             ;;
-            
+
         'manager')
             cleanup_component "manager" "/var/ossec"
             sudo systemctl disable wazuh-manager
             sudo systemctl daemon-reload
             ;;
-            
+
         'dashboard')
             cleanup_component "dashboard" \
                 "/var/lib/wazuh-dashboard" \
                 "/usr/share/wazuh-dashboard" \
                 "/etc/wazuh-dashboard"
             ;;
-            
+
         'filebeat')
             if [[ "$distro" == "rpm" ]]; then
                 sudo yum remove filebeat -y
@@ -141,7 +141,7 @@ function generate_offline_files() {
     fi
 
     log "Generating offline installation files for $distro distribution..."
-    
+
     if ! sudo ./wazuh-install.sh -dw "$distro"; then
         error "Failed to generate offline files"
         return 1
@@ -236,7 +236,7 @@ function install_indexer() {
     # Move certificates to proper location
     local cert_files=(
         "$node_name.pem:indexer.pem"
-        "$node_name-key.pem:indexer-key.pem" 
+        "$node_name-key.pem:indexer-key.pem"
         "admin-key.pem:admin-key.pem"
         "admin.pem:admin.pem"
     )
@@ -297,7 +297,7 @@ function install_indexer() {
 function install_manager() {
     local distro="$1"
     log "Installing Wazuh manager..."
-    
+
     if [ "$distro" = "rpm" ]; then
         if ! sudo rpm --import ./wazuh-offline/wazuh-files/GPG-KEY-WAZUH || ! rpm -ivh ./wazuh-offline/wazuh-packages/wazuh-manager*.rpm; then
             error "Failed to install Wazuh manager package"
@@ -316,7 +316,7 @@ function install_manager() {
     fi
 
     if ! echo 'admin' | sudo /var/ossec/bin/wazuh-keystore -f indexer -k password; then
-        error "Failed to set indexer password" 
+        error "Failed to set indexer password"
         return 1
     fi
 
@@ -326,7 +326,7 @@ function install_manager() {
         error "Failed to enable Wazuh manager service"
         return 1
     fi
-    
+
     if ! sudo systemctl start wazuh-manager; then
         error "Failed to start Wazuh manager service"
         return 1
@@ -456,7 +456,7 @@ function install_dashboard() {
     # Setup certificates
     local NODE_NAME="dashboard"
     local CERT_DIR="/etc/wazuh-dashboard/certs"
-    
+
     sudo mkdir -p "$CERT_DIR"
 
     # Move certificates to proper location
@@ -598,6 +598,7 @@ main() {
     local manager_ip=""
     local dashboard_ip=""
     local filebeat_ip=""
+    curl -sO https://packages.wazuh.com/4.9/wazuh-install.sh
 
     # Parse named arguments
     while [[ $# -gt 0 ]]; do
@@ -720,6 +721,9 @@ main() {
             exit 1
             ;;
     esac
+
+    rm -rf wazuh-install.sh
+
 
     echo -e "${GREEN}Installation completed successfully.${NC}"
     return 0
