@@ -239,7 +239,7 @@ export function Header({
                 <HeaderNavControls side="right" navControls$={observables.navControlsRight$} />
               </EuiHeaderSectionItem>
 
-              <EuiHeaderSectionItem border="left">
+              {/* <EuiHeaderSectionItem border="left">
                 <HeaderHelpMenu
                   helpExtension$={observables.helpExtension$}
                   helpSupportUrl$={observables.helpSupportUrl$}
@@ -248,7 +248,7 @@ export function Header({
                   surveyLink={survey}
                   darkmode={observables.darkmode}
                 />
-              </EuiHeaderSectionItem>
+              </EuiHeaderSectionItem> */}
             </EuiHeaderSection>
           </EuiHeader>
         </div>
