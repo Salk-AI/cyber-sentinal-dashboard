@@ -501,10 +501,17 @@ function install_dashboard() {
         return 1
     fi
 
+    copy_assisted_plugins
+
     log "Wazuh dashboard installed and configured successfully"
     return 0
 }
 
+
+function copy_assisted_plugins()
+{
+
+}
 
 function generate_offline_files(){
     log "Generating offline files for offline installation."
