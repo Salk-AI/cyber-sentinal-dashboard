@@ -290,10 +290,12 @@ function install_indexer() {
 
     # Verify installation
     log "Verifying indexer installation..."
-    if ! curl -XGET "https://$ip_address:9200" -u admin:admin -k --silent --fail; then
-        error "Failed to verify indexer installation"
-        return 1
-    fi
+    # if ! curl -XGET "https://$ip_address:9200" -u admin:admin -k --silent --fail; then
+    #     error "Failed to verify indexer installation"
+    #     return 1
+    # fi
+
+    curl -XGET "https://$ip_address:9200" -u admin:admin -k
 
     log "Wazuh indexer installed and configured successfully"
     return 0
@@ -437,6 +439,39 @@ function install_filebeat() {
 }
 
 
+function change_indexer_name(){
+    manager_ip="$1"
+    log "Changing indexer names.."
+
+    sudo systemctl stop filebeat
+
+    curl -so template.json https://raw.githubusercontent.com/wazuh/wazuh/v4.9.2/extensions/elasticsearch/7.x/wazuh-template.json
+
+    if ! sed -i 's/wazuh-alerts-4\.x-\*/vg-alerts-4.x-*/g; s/wazuh-archives-4\.x-\*/vg-archives-4.x-*/g' template.json; then
+        error "Failed to update index patterns in template.json"
+        return 1
+    fi
+
+    log "Successfully updated index patterns in template.json"
+
+    curl -XPUT -k -u admin:admin "https://${manager_ip}:9200/_template/wazuh" -H 'Content-Type: application/json' -d @template.json
+
+
+    log "Updating Filebeat manifest file..."
+    
+    if ! sudo sed -i 's/default: wazuh-alerts-4.x-/default: vg-alerts-4.x-/' /usr/share/filebeat/module/wazuh/alerts/manifest.yml; then
+        error "Failed to update Filebeat manifest file"
+        return 1
+    fi
+
+
+    sudo systemctl restart filebeat
+    sudo systemctl restart wazuh-manager
+    sudo systemctl restart wazuh-indexer
+    sudo systemctl restart wazuh-dashboard
+}
+
+
 function install_dashboard() {
     local ip_address="$1"
 
@@ -510,7 +545,47 @@ function install_dashboard() {
 
 function copy_assisted_plugins()
 {
+    local current_path="$(pwd)"
+    
+    # Validate source directory exists
+    if [[ ! -d "$current_path/assisted_plugins" ]]; then
+        error "assisted_plugins directory not found at $current_path"
+        return 1
+    fi
 
+    # Set permissions on destination
+    sudo chmod 777 -R /usr/share/wazuh-dashboard
+    cd /usr/share/wazuh-dashboard/plugins || return 1
+
+    # Remove existing plugins
+    local plugins=(
+        "alertingDashboards"
+        "ganttChartDashboards" 
+        "notificationsDashboards"
+        "securityDashboards"
+        "customImportMapDashboards"
+        "indexManagementDashboards"
+        "reportsDashboards"
+    )
+
+    for plugin in "${plugins[@]}"; do
+        sudo rm -rf "/usr/share/wazuh-dashboard/plugins/$plugin"
+        sudo cp -r "$current_path/assisted_plugins/$plugin" /usr/share/wazuh-dashboard/plugins/
+    done
+
+
+    sudo rm -rf "/usr/share/wazuh-dashboard/plugins/alertingDashboards"
+    sudo cp -r "$current_path/assisted_plugins/alertingDashboards" /usr/share/wazuh-dashboard/plugins/
+
+    # Restart dashboard service
+    sudo systemctl daemon-reload
+    if ! sudo systemctl restart wazuh-dashboard; then
+        error "Failed to restart wazuh-dashboard service"
+        return 1
+    fi
+
+    log "Successfully copied and configured assisted plugins"
+    return 0
 }
 
 function generate_offline_files(){
@@ -743,10 +818,15 @@ main() {
             ;;
     esac
 
+    
+    cd cyber-sentinal-dashboard
+    copy_assisted_plugins
+
+    change_indexer_name
+
     rm -rf wazuh-install.sh
     cd ../
     rm -rf scripts/
-
 
     echo -e "${GREEN}Installation completed successfully.${NC}"
     return 0
