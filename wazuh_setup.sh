@@ -21,14 +21,17 @@ log() {
     echo -e "${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')] $1${NC}"
 }
 
+
 error() {
     echo -e "${RED}[ERROR] $1${NC}" >&2
     exit 1
 }
 
+
 warning() {
     echo -e "${YELLOW}[WARNING] $1${NC}"
 }
+
 
 # Check root privileges
 check_root() {
@@ -36,6 +39,7 @@ check_root() {
         error "This script must be run as root"
     fi
 }
+
 
 # Check required dependencies
 check_dependencies() {
@@ -47,6 +51,7 @@ check_dependencies() {
         fi
     done
 }
+
 
 function delete_components() {
     local component="$1"
@@ -123,6 +128,7 @@ function delete_components() {
     log "Successfully removed $component component(s)"
     return 0
 }
+
 
 function generate_offline_files() {
     local distro="$1"
@@ -447,7 +453,7 @@ function install_dashboard() {
             return 1
         fi
     else
-        if ! sudo dpkg -i wazuh-dashboard/dev-tools/build-packages/output/deb/wazuh-dashboard_*.deb; then
+        if ! sudo dpkg -i ../cyber-sentinal-dashboard/dev-tools/build-packages/output/deb/wazuh-dashboard_*.deb; then
             error "Failed to install Wazuh dashboard package"
             return 1
         fi
@@ -577,17 +583,28 @@ function build_package(){
     mkdir packages
     cd packages
     local path_to_zip=$(pwd)
-    zip -r -j ./dashboard-package.zip ../wazuh-dashboard/target/opensearch-dashboards-2.13.0-linux-x64.tar.gz
-    zip -r -j ./security-package.zip ../wazuh-dashboard/plugins/wazuh-security-dashboards-plugin/build/security-dashboards-2.13.0.0.zip
-    zip -r -j ./wazuh-package.zip ../wazuh-dashboard/plugins/wazuh-check-updates/build/wazuhCheckUpdates-2.13.0.zip ../wazuh-dashboard/plugins/main/build/wazuh-2.13.0.zip ../wazuh-dashboard/plugins/wazuh-core/build/wazuhCore-2.13.0.zip
+    zip -r -j ./dashboard-package.zip ../cyber-sentinal-dashboard/target/opensearch-dashboards-2.13.0-linux-x64.tar.gz
+    zip -r -j ./security-package.zip ../cyber-sentinal-dashboard/plugins/wazuh-security-dashboards-plugin/build/security-dashboards-2.13.0.0.zip
+    zip -r -j ./wazuh-package.zip ../cyber-sentinal-dashboard/plugins/wazuh-check-updates/build/wazuhCheckUpdates-2.13.0.zip ../cyber-sentinal-dashboard/plugins/main/build/wazuh-2.13.0.zip ../cyber-sentinal-dashboard/plugins/wazuh-core/build/wazuhCore-2.13.0.zip
 
     log "Started building package..."
     cd ../wazuh-dashboard/dev-tools/build-packages/
     ./build-packages.sh -v $version -r 1 --$distro -a file://$path_to_zip/wazuh-package.zip -s file://$path_to_zip/security-package.zip -b file://$path_to_zip/dashboard-package.zip
 }
 
+function move_to_working_dir(){
+    cd ../scripts
+}
+
 main() {
     # Define variables
+    cd ../
+    if [ ! -d "scripts" ]; then
+        mkdir scripts
+    fi
+
+    move_to_working_dir
+
     local distro=""
     local to_do=""
     local component=""
@@ -720,6 +737,8 @@ main() {
     esac
 
     rm -rf wazuh-install.sh
+    cd ../
+    rm -rf scripts/
 
 
     echo -e "${GREEN}Installation completed successfully.${NC}"
