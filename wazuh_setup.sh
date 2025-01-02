@@ -165,12 +165,6 @@ function generate_install_files() {
     local manager_ip_address="$2"
     local dashboard_ip_address="$3"
 
-    # Validate input
-    if [[ -z "$ip_address" ]]; then
-        error "IP address parameter is required"
-        return 1
-    fi
-
     log "Downloading config.yml file..."
     if ! curl -sO https://packages.wazuh.com/4.9/config.yml; then
         error "Failed to download config.yml"
