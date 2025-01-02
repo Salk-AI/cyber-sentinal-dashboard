@@ -675,16 +675,17 @@ function build_package(){
 }
 
 function move_to_working_dir(){
+    cd ../
+    if [ ! -d "scripts" ]; then
+        mkdir scripts
+    fi
     cd ../scripts
     cp ../cyber-sentinal-dashboard/wazuh_setup.sh ./
 }
 
 main() {
     # Define variables
-    cd ../
-    if [ ! -d "scripts" ]; then
-        mkdir scripts
-    fi
+    
 
     move_to_working_dir
 
