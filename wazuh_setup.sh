@@ -679,7 +679,7 @@ function move_to_working_dir(){
     if [ ! -d "scripts" ]; then
         mkdir scripts
     fi
-    cd ../scripts
+    cd scripts
     cp ../cyber-sentinal-dashboard/wazuh_setup.sh ./
 }
 
