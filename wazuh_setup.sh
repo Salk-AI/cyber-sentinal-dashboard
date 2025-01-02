@@ -670,12 +670,13 @@ function build_package(){
     zip -r -j ./wazuh-package.zip ../cyber-sentinal-dashboard/plugins/wazuh-check-updates/build/wazuhCheckUpdates-2.13.0.zip ../cyber-sentinal-dashboard/plugins/main/build/wazuh-2.13.0.zip ../cyber-sentinal-dashboard/plugins/wazuh-core/build/wazuhCore-2.13.0.zip
 
     log "Started building package..."
-    cd ../wazuh-dashboard/dev-tools/build-packages/
+    cd ../cyber-sentinal-dashboard/dev-tools/build-packages/
     ./build-packages.sh -v $version -r 1 --$distro -a file://$path_to_zip/wazuh-package.zip -s file://$path_to_zip/security-package.zip -b file://$path_to_zip/dashboard-package.zip
 }
 
 function move_to_working_dir(){
     cd ../scripts
+    cp ../cyber-sentinal-dashboard/wazuh_setup.sh ./
 }
 
 main() {
