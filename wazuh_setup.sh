@@ -589,13 +589,6 @@ function build_package(){
 
     log "Started building package..."
 
-    # echo -e "${YELLOW}Cleaning up plugins folder..${NC}"
-    # rm -rf plugins/*
-    # rm -rf target/
-    # rm -rf node_modules/
-
-    # yarn osd clean
-
     # step 1
     yarn osd bootstrap
     yarn build --linux --skip-os-packages --release
@@ -791,16 +784,6 @@ main() {
             exit 1
             ;;
     esac
-
-    
-    cd cyber-sentinal-dashboard
-    copy_assisted_plugins
-
-    change_indexer_name
-
-    rm -rf wazuh-install.sh
-    cd ../
-    rm -rf scripts/
 
     echo -e "${GREEN}Installation completed successfully.${NC}"
     return 0
