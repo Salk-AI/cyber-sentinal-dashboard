@@ -14,7 +14,7 @@ readonly INDEXER_CONFIG_FILE="/etc/wazuh-indexer/opensearch.yml"
 readonly FILEBEAT_CONFIG_FILE="/etc/filebeat/filebeat.yml"
 readonly DASHBOARD_CONFIG_FILE="/etc/wazuh-dashboard/opensearch_dashboards.yml"
 readonly WAZUH_CONFIG_FILE="/usr/share/wazuh-dashboard/data/wazuh/config/wazuh.yml"
-
+declare -g PATH_TO_SCRIPTS=""
 
 
 log() {
@@ -131,6 +131,7 @@ function delete_components() {
 
 
 function generate_offline_files() {
+    cd "${PATH_TO_SCRIPTS}"
     local distro="$1"
     local supported_distros=("deb" "rpm")
 
@@ -142,8 +143,7 @@ function generate_offline_files() {
 
     # Check if wazuh-install.sh exists and is executable
     if [[ ! -x "./wazuh-install.sh" ]]; then
-        error "wazuh-install.sh not found or not executable"
-        return 1
+        sudo chmod 744 wazuh-install.sh
     fi
 
     log "Generating offline installation files for $distro distribution..."
@@ -154,6 +154,7 @@ function generate_offline_files() {
     fi
 
     log "Successfully generated offline files for $distro distribution"
+    sudo tar xf wazuh-offline.tar.gz
     sudo chmod 777 -R ./wazuh-offline/
     return 0
 }
@@ -161,6 +162,9 @@ function generate_offline_files() {
 
 
 function generate_install_files() {
+
+    cd "${PATH_TO_SCRIPTS}"
+
     local indexer_ip_address="$1"
     local manager_ip_address="$2"
     local dashboard_ip_address="$3"
@@ -582,37 +586,13 @@ function copy_assisted_plugins()
     return 0
 }
 
-function generate_offline_files(){
-    log "Generating offline files for offline installation."
-    local distro="$1"
-    if [ ! -f "wazuh-install.sh" ]; then
-        curl -sO https://packages.wazuh.com/4.9/wazuh-install.sh
-    fi
-    sudo chmod 744 wazuh-install.sh
-
-    if [ "$distro" = "rpm" ]; then
-        sudo ./wazuh-install.sh -dw rpm
-    elif [ "$distro" = "deb" ]; then
-        sudo ./wazuh-install.sh -dw deb
-    fi
-
-    log "Extracting offline files.."
-    if ! sudo tar xf wazuh-offline.tar.gz; then
-        error "Error in extracting offline files.."
-        exit 1
-    fi
-
-    log "Offline files extracted successfully..."
-    return 1
-}
-
 
 function build_package(){
 
     local distro="$1"
-    local version="$2"
     # we are in scripts directory
     # move out and clone dashboard
+    cd "${PATH_TO_SCRIPTS}"
     cd ../
     if [ -d "cyber-sentinal-dashboard" ]; then
         rm -rf cyber-sentinal-dashboard
@@ -680,8 +660,8 @@ function build_package(){
 
     log "Started building package..."
     cd ../cyber-sentinal-dashboard/dev-tools/build-packages/
-    ./build-packages.sh -v $version -r 1 --$distro -a file://$path_to_zip/wazuh-package.zip -s file://$path_to_zip/security-package.zip -b file://$path_to_zip/dashboard-package.zip
-    cd ../scripts
+    ./build-packages.sh -v 4.9.2 -r 1 --$distro -a file://$path_to_zip/wazuh-package.zip -s file://$path_to_zip/security-package.zip -b file://$path_to_zip/dashboard-package.zip
+    cd "${PATH_TO_SCRIPTS}"
 }
 
 function move_to_working_dir(){
@@ -690,12 +670,11 @@ function move_to_working_dir(){
         mkdir scripts
     fi
     cd scripts
+    PATH_TO_SCRIPTS=$(pwd)
 }
 
 main() {
     # Define variables
-    
-
     move_to_working_dir
 
     local distro=""
@@ -706,6 +685,7 @@ main() {
     local dashboard_ip=""
     local filebeat_ip=""
     curl -sO https://packages.wazuh.com/4.9/wazuh-install.sh
+    sudo chmod 744 wazuh-install.sh
 
     # Parse named arguments
     while [[ $# -gt 0 ]]; do
@@ -713,7 +693,7 @@ main() {
             --build-package)
                 distro="$2"
                 version="$3"
-                build_package "$distro" "$version"
+                build_package "$distro"
                 exit 0
                 ;;
             --offline-files)
