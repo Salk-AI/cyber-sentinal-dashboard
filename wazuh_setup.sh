@@ -747,7 +747,7 @@ main() {
     echo -e "${GREEN}Starting installation process...${NC}"
     case "$component" in
         all)
-            if [[ -z "$indexer_ip" || -z "$manager_ip" || -z "$dashboard_ip" || -z ]]; then
+            if [[ -z "$indexer_ip" || -z "$manager_ip" || -z "$dashboard_ip" ]]; then
                 echo -e "${RED}Error: All IP addresses required for full installation.${NC}"
                 exit 1
             fi
