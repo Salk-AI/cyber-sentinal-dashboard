@@ -207,6 +207,7 @@ function generate_install_files() {
 
 
 function install_indexer() {
+    cd "${PATH_TO_SCRIPTS}"
     local indexer_ip_address="$1"
     local distro="$2"
     local node_name="node-1"
@@ -282,6 +283,7 @@ function install_indexer() {
 
 
 function install_manager() {
+    cd "${PATH_TO_SCRIPTS}"
     local distro="$1"
     log "Installing Wazuh manager..."
 
@@ -311,6 +313,7 @@ function install_manager() {
 
 
 function install_filebeat() {
+    cd "${PATH_TO_SCRIPTS}"
     local manager_ip_address="$1"
     local distro="$2"
 
@@ -422,9 +425,10 @@ function change_indexer_name(){
 
 
 function install_dashboard() {
-    local ip_address="$1"
+    cd "${PATH_TO_SCRIPTS}"
+    local dashboard_ip_address="$1"
 
-    if [ -z "$ip_address" ]; then
+    if [ -z "$dashboard_ip_address" ]; then
         error "IP address parameter is required"
         return 1
     fi
@@ -445,29 +449,25 @@ function install_dashboard() {
 
     # Setup certificates
     local NODE_NAME="dashboard"
-    local CERT_DIR="/etc/wazuh-dashboard/certs"
+    local DASHBOARD_CERT_DIR="/etc/wazuh-dashboard/certs"
 
-    sudo mkdir -p "$CERT_DIR"
+    sudo mkdir "$DASHBOARD_CERT_DIR"
 
     # Move certificates to proper location
-    if ! sudo mv -n "wazuh-install-files/$NODE_NAME.pem" "$CERT_DIR/dashboard.pem" || \
-       ! sudo mv -n "wazuh-install-files/$NODE_NAME-key.pem" "$CERT_DIR/dashboard-key.pem" || \
-       ! sudo cp "wazuh-install-files/root-ca.pem" "$CERT_DIR/"; then
-        error "Failed to setup certificates"
-        return 1
-    fi
+    sudo mv -n "wazuh-install-files/$NODE_NAME.pem" "$DASHBOARD_CERT_DIR/dashboard.pem"
+    sudo mv -n "wazuh-install-files/$NODE_NAME-key.pem" "$DASHBOARD_CERT_DIR/dashboard-key.pem"
+    sudo cp "wazuh-install-files/root-ca.pem" "$DASHBOARD_CERT_DIR/"
 
     # Set proper permissions
-    sudo chmod 500 "$CERT_DIR"
-    sudo chmod 400 "$CERT_DIR"/dashboard.pem
-    sudo chmod 400 "$CERT_DIR"/dashboard-key.pem
-    sudo chmod 400 "$CERT_DIR"/root-ca.pem
-    sudo chown -R wazuh-dashboard:wazuh-dashboard "$CERT_DIR"
+    sudo chmod 500 "$DASHBOARD_CERT_DIR"
+    sudo chmod 400 "$DASHBOARD_CERT_DIR"/dashboard.pem
+    sudo chmod 400 "$DASHBOARD_CERT_DIR"/dashboard-key.pem
+    sudo chmod 400 "$DASHBOARD_CERT_DIR"/root-ca.pem
+    sudo chown -R wazuh-dashboard:wazuh-dashboard "$DASHBOARD_CERT_DIR"
 
     # Update configuration
-    if ! sed -i 's|^server.host:.*|server.host: '"$ip_address"'|' "$DASHBOARD_CONFIG_FILE" || \
-       ! sed -i 's|^opensearch.hosts:.*|opensearch.hosts: https://'"$ip_address"':9200|' "$DASHBOARD_CONFIG_FILE" || \
-       ! sudo sed -i 's|url: https://localhost|url: https://'"$ip_address"'|' "$WAZUH_CONFIG_FILE"; then
+    if ! sed -i 's|^server.host:.*|server.host: '"$dashboard_ip_address"'|' "$DASHBOARD_CONFIG_FILE" || \
+       ! sed -i 's|^opensearch.hosts:.*|opensearch.hosts: https://'"$dashboard_ip_address"':9200|' "$DASHBOARD_CONFIG_FILE"; then
         error "Failed to update configuration files"
         return 1
     fi
@@ -475,17 +475,15 @@ function install_dashboard() {
     # Start service
     log "Starting Wazuh dashboard service..."
     sudo systemctl daemon-reload
-    if ! sudo systemctl enable wazuh-dashboard; then
-        error "Failed to enable Wazuh dashboard service"
+    sudo systemctl enable wazuh-dashboard
+    sudo systemctl start wazuh-dashboard
+
+    if ! sudo sed -i 's|url: https://localhost|url: https://'"$dashboard_ip_address"'|' "$WAZUH_CONFIG_FILE"; then
+        error "Failed to update ${WAZUH_CONFIG_FILE}"
         return 1
     fi
 
-    if ! sudo systemctl start wazuh-dashboard; then
-        error "Failed to start Wazuh dashboard service"
-        return 1
-    fi
-
-    copy_assisted_plugins
+    # copy_assisted_plugins
 
     log "Wazuh dashboard installed and configured successfully"
     return 0
