@@ -198,6 +198,7 @@ function generate_install_files() {
         error "Error in extracting installation files"
         return 1
     fi
+    sudo chmod 777 -R ./wazuh-install-files
 
     log "Files extracted successfully.."
     return 0
