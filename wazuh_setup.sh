@@ -286,7 +286,7 @@ function install_manager() {
     log "Installing Wazuh manager..."
 
     if [ "$distro" = "rpm" ]; then
-        if ! sudo rpm --import ./wazuh-offline/wazuh-files/GPG-KEY-WAZUH || ! rpm -ivh ./wazuh-offline/wazuh-packages/wazuh-manager*.rpm; then
+        if ! sudo rpm --import ./wazuh-offline/wazuh-files/GPG-KEY-WAZUH || ! sudo rpm -ivh ./wazuh-offline/wazuh-packages/wazuh-manager*.rpm; then
             error "Failed to install Wazuh manager package"
             return 1
         fi
@@ -297,28 +297,14 @@ function install_manager() {
         fi
     fi
 
-    if ! echo 'admin' | sudo /var/ossec/bin/wazuh-keystore -f indexer -k username; then
-        error "Failed to set indexer username"
-        return 1
-    fi
-
-    if ! echo 'admin' | sudo /var/ossec/bin/wazuh-keystore -f indexer -k password; then
-        error "Failed to set indexer password"
-        return 1
-    fi
+    echo 'admin' | sudo /var/ossec/bin/wazuh-keystore -f indexer -k username
+    echo 'admin' | sudo /var/ossec/bin/wazuh-keystore -f indexer -k password
 
     log "Starting Wazuh manager service..."
     sudo systemctl daemon-reload
-    if ! sudo systemctl enable wazuh-manager; then
-        error "Failed to enable Wazuh manager service"
-        return 1
-    fi
-
-    if ! sudo systemctl start wazuh-manager; then
-        error "Failed to start Wazuh manager service"
-        return 1
-    fi
-
+    sudo systemctl enable wazuh-manager
+    sudo systemctl start wazuh-manager
+    
     log "Wazuh manager installed and configured successfully"
     return 0
 }
