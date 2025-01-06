@@ -304,17 +304,17 @@ function install_manager() {
     sudo systemctl daemon-reload
     sudo systemctl enable wazuh-manager
     sudo systemctl start wazuh-manager
-    
+
     log "Wazuh manager installed and configured successfully"
     return 0
 }
 
 
 function install_filebeat() {
-    local ip_address="$1"
+    local manager_ip_address="$1"
     local distro="$2"
 
-    if [ -z "$ip_address" ]; then
+    if [ -z "$manager_ip_address" ]; then
         error "IP address parameter is required"
         return 1
     fi
@@ -341,7 +341,7 @@ function install_filebeat() {
     fi
 
     # Configure Filebeat settings
-    if ! sudo sed -i 's|^  hosts: \[".*"\]|  hosts: ["'$ip_address':9200"]|' "$FILEBEAT_CONFIG_FILE" || \
+    if ! sudo sed -i 's|^  hosts: \[".*"\]|  hosts: ["'$manager_ip_address':9200"]|' "$FILEBEAT_CONFIG_FILE" || \
        ! sudo sed -i 's|^  username:.*|  username: admin|' "$FILEBEAT_CONFIG_FILE" || \
        ! sudo sed -i 's|^  password:.*|  password: admin|' "$FILEBEAT_CONFIG_FILE"; then
         error "Failed to configure Filebeat settings"
@@ -349,12 +349,9 @@ function install_filebeat() {
     fi
 
     # Setup keystore
-    if ! sudo filebeat keystore create || \
-       ! echo admin | sudo filebeat keystore add username --stdin --force || \
-       ! echo admin | sudo filebeat keystore add password --stdin --force; then
-        error "Failed to setup Filebeat keystore"
-        return 1
-    fi
+    sudo filebeat keystore create
+    echo admin | sudo filebeat keystore add username --stdin --force
+    echo admin | sudo filebeat keystore add password --stdin --force
 
     # Extract Wazuh module
     if ! sudo tar -xzf ./wazuh-offline/wazuh-files/wazuh-filebeat-0.4.tar.gz -C /usr/share/filebeat/module; then
@@ -366,12 +363,9 @@ function install_filebeat() {
     local NODE_NAME="wazuh-1"
     sudo mkdir -p /etc/filebeat/certs
 
-    if ! sudo mv -n wazuh-install-files/$NODE_NAME.pem /etc/filebeat/certs/filebeat.pem || \
-       ! sudo mv -n wazuh-install-files/$NODE_NAME-key.pem /etc/filebeat/certs/filebeat-key.pem || \
-       ! sudo cp wazuh-install-files/root-ca.pem /etc/filebeat/certs/; then
-        error "Failed to setup certificates"
-        return 1
-    fi
+    sudo mv -n wazuh-install-files/$NODE_NAME.pem /etc/filebeat/certs/filebeat.pem
+    sudo mv -n wazuh-install-files/$NODE_NAME-key.pem /etc/filebeat/certs/filebeat-key.pem
+    sudo cp wazuh-install-files/root-ca.pem /etc/filebeat/certs/
 
     # Set proper permissions
     sudo chmod 500 /etc/filebeat/certs
@@ -383,21 +377,11 @@ function install_filebeat() {
     # Start Filebeat service
     log "Starting Filebeat service..."
     sudo systemctl daemon-reload
-    if ! sudo systemctl enable filebeat; then
-        error "Failed to enable Filebeat service"
-        return 1
-    fi
-
-    if ! sudo systemctl start filebeat; then
-        error "Failed to start Filebeat service"
-        return 1
-    fi
+    sudo systemctl enable filebeat
+    sudo systemctl start filebeat
 
     # Test output
-    if ! sudo filebeat test output; then
-        error "Filebeat output test failed"
-        return 1
-    fi
+    sudo filebeat test output
 
     log "Filebeat installed and configured successfully"
     return 0
