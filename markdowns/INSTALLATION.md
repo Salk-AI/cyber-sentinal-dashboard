@@ -74,6 +74,8 @@ sudo ./wazuh_setup.sh [OPTIONS]
 
 ## Commands and Examples
 
+Step 1. move up a directory and make a new folder, name:= "scripts" and cp "wazuh_setup.sh" in "scripts" folder.
+
 ### Building Packages
 
 Build a package for a specific distribution and version:

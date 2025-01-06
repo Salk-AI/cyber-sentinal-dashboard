@@ -660,7 +660,8 @@ function move_to_working_dir(){
 
 main() {
     # Define variables
-    move_to_working_dir
+    # move_to_working_dir
+    PATH_TO_SCRIPTS=$(pwd)
 
     local distro=""
     local to_do=""
@@ -709,10 +710,6 @@ main() {
                 dashboard_ip="$2"
                 shift 2
                 ;;
-            --filebeat-ip)
-                filebeat_ip="$2"
-                shift 2
-                ;;
             --action)
                 to_do="$2"
                 shift 2
@@ -759,7 +756,7 @@ main() {
             # install_manager "$distro" && \
             # install_filebeat "$manager_ip" "$distro" && \
             # install_dashboard "$dashboard_ip" "$distro"
-            setup_dashboard
+            setup_dashboard "$distro" "$indexer_ip" "$manager_ip" "$dashboard_ip"
             ;;
         indexer)
             if [[ -z "$indexer_ip" ]]; then
