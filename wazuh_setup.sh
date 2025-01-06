@@ -396,13 +396,14 @@ function install_filebeat() {
 
 function change_indexer_name(){
     MANAGER_IP_ADDR="$1"
+    cd "${PATH_TO_SCRIPTS}"
     log "Changing indexer names.."
 
     sudo systemctl stop filebeat
 
     curl -so template.json https://raw.githubusercontent.com/wazuh/wazuh/v4.9.2/extensions/elasticsearch/7.x/wazuh-template.json
 
-    if ! sed -i 's/wazuh-alerts-4\.x-\*/vg-alerts-4.x-*/g; s/wazuh-archives-4\.x-\*/vg-archives-4.x-*/g' template.json; then
+    if ! sed -i 's/wazuh-alerts-4\.x-\*/cyberSentinal-alerts-4.x-*/g; s/wazuh-archives-4\.x-\*/cyberSentinal-archives-4.x-*/g' template.json; then
         error "Failed to update index patterns in template.json"
         return 1
     fi
@@ -414,7 +415,7 @@ function change_indexer_name(){
 
     log "Updating Filebeat manifest file..."
     
-    if ! sudo sed -i 's/default: wazuh-alerts-4.x-/default: vg-alerts-4.x-/' /usr/share/filebeat/module/wazuh/alerts/manifest.yml; then
+    if ! sudo sed -i 's/default: wazuh-alerts-4.x-/default: cyberSentinal-alerts-4.x-/' /usr/share/filebeat/module/wazuh/alerts/manifest.yml; then
         error "Failed to update Filebeat manifest file"
         return 1
     fi
@@ -439,7 +440,7 @@ function install_dashboard() {
     log "Installing Wazuh dashboard..."
     if [ "$distro" = "rpm" ]; then
         if ! sudo rpm --import ./wazuh-offline/wazuh-files/GPG-KEY-WAZUH || \
-           ! sudo rpm -ivh ./wazuh-offline/wazuh-packages/wazuh-dashboard*.rpm; then
+           ! sudo rpm -ivh ../cyber-sentinal-dashboard/dev-tools/build-packages/output/rpm/wazuh-dashboard*.rpm; then
             error "Failed to install Wazuh dashboard package"
             return 1
         fi
@@ -550,19 +551,25 @@ function copy_assisted_plugins()
 
 function setup_dashboard()
 {
-    generate_offline_files
-    generate_install_files
+    local distro="$1"
+    INDEXER_IP_ADDR="$2"
+    MANAGER_IP_ADDR="$3"
+    DASHBOARD_IP_ADDR="$4"
+
+    generate_offline_files "$distro"
+    generate_install_files "$INDEXER_IP_ADDR" "$MANAGER_IP_ADDR" "$DASHBOARD_IP_ADDR"
     install_dashboard_with_assisted_installation
-    delete_components
+    delete_components "all" "$distro"
     cd "${PATH_TO_SCRIPTS}"
     sudo rm -rf wazuh-offline/ wazuh-install-files/
     sudo tar xf wazuh-offline.tar.gz
     sudo tar xf wazuh-install-files.tar
-    install_indexer
-    install_manager
-    install_filebeat
-    install_dashboard
+    install_indexer "$INDEXER_IP_ADDR" "$distro"
+    install_manager "$distro"
+    install_filebeat "$MANAGER_IP_ADDR" "$distro"
+    install_dashboard "$DASHBOARD_IP_ADDR"
     copy_assisted_plugins
+    change_indexer_name "$MANAGER_IP_ADDR"
 }
 
 function build_package(){
@@ -743,15 +750,16 @@ main() {
     echo -e "${GREEN}Starting installation process...${NC}"
     case "$component" in
         all)
-            if [[ -z "$indexer_ip" || -z "$manager_ip" || -z "$dashboard_ip" || -z "$filebeat_ip" ]]; then
+            if [[ -z "$indexer_ip" || -z "$manager_ip" || -z "$dashboard_ip" || -z ]]; then
                 echo -e "${RED}Error: All IP addresses required for full installation.${NC}"
                 exit 1
             fi
-            echo -e "${YELLOW}Installing all Wazuh components...${NC}"
-            install_indexer "$indexer_ip" "$distro" && \
-            install_manager "$distro" && \
-            install_filebeat "$filebeat_ip" "$distro" && \
-            install_dashboard "$dashboard_ip" "$distro"
+            # echo -e "${YELLOW}Installing all Wazuh components...${NC}"
+            # install_indexer "$indexer_ip" "$distro" && \
+            # install_manager "$distro" && \
+            # install_filebeat "$manager_ip" "$distro" && \
+            # install_dashboard "$dashboard_ip" "$distro"
+            setup_dashboard
             ;;
         indexer)
             if [[ -z "$indexer_ip" ]]; then
