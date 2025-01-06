@@ -15,6 +15,9 @@ readonly FILEBEAT_CONFIG_FILE="/etc/filebeat/filebeat.yml"
 readonly DASHBOARD_CONFIG_FILE="/etc/wazuh-dashboard/opensearch_dashboards.yml"
 readonly WAZUH_CONFIG_FILE="/usr/share/wazuh-dashboard/data/wazuh/config/wazuh.yml"
 declare -g PATH_TO_SCRIPTS=""
+declare -g INDEXER_IP_ADDR=""
+declare -g MANAGER_IP_ADDR=""
+declare -g DASHBOARD_IP_ADDR=""
 
 
 log() {
@@ -165,9 +168,9 @@ function generate_install_files() {
 
     cd "${PATH_TO_SCRIPTS}"
 
-    local indexer_ip_address="$1"
-    local manager_ip_address="$2"
-    local dashboard_ip_address="$3"
+    INDEXER_IP_ADDR="$1"
+    MANAGER_IP_ADDR="$2"
+    DASHBOARD_IP_ADDR="$3"
 
     log "Downloading config.yml file..."
     if ! curl -sO https://packages.wazuh.com/4.9/config.yml; then
@@ -178,9 +181,9 @@ function generate_install_files() {
     log "Configuring installation files..."
     # Update all IP placeholders in one pass
     if ! sed -i \
-        -e "s/<indexer-node-ip>/${indexer_ip_address}/g" \
-        -e "s/<wazuh-manager-ip>/${manager_ip_address}/g" \
-        -e "s/<dashboard-node-ip>/${dashboard_ip_address}/g" \
+        -e "s/<indexer-node-ip>/${INDEXER_IP_ADDR}/g" \
+        -e "s/<wazuh-manager-ip>/${MANAGER_IP_ADDR}/g" \
+        -e "s/<dashboard-node-ip>/${DASHBOARD_IP_ADDR}/g" \
         config.yml; then
         error "Failed to update config.yml"
         return 1
@@ -208,13 +211,13 @@ function generate_install_files() {
 
 function install_indexer() {
     cd "${PATH_TO_SCRIPTS}"
-    local indexer_ip_address="$1"
+    INDEXER_IP_ADDR="$1"
     local distro="$2"
     local node_name="node-1"
     local certs_dir="/etc/wazuh-indexer/certs"
 
     # Validate input
-    if [[ -z "$indexer_ip_address" ]]; then
+    if [[ -z "$INDEXER_IP_ADDR" ]]; then
         error "IP address parameter is required"
         return 1
     fi
@@ -254,7 +257,7 @@ function install_indexer() {
     sudo chown -R wazuh-indexer:wazuh-indexer /etc/wazuh-indexer/certs
 
     # Configure indexer
-    if ! sudo sed -i 's/^network\.host: .*/network.host: "'$indexer_ip_address'"/' "$INDEXER_CONFIG_FILE"; then
+    if ! sudo sed -i 's/^network\.host: .*/network.host: "'$INDEXER_IP_ADDR'"/' "$INDEXER_CONFIG_FILE"; then
         error "Failed to update indexer configuration"
         return 1
     fi
@@ -270,12 +273,12 @@ function install_indexer() {
 
     # Verify installation
     log "Verifying indexer installation..."
-    # if ! curl -XGET "https://$indexer_ip_address:9200" -u admin:admin -k --silent --fail; then
+    # if ! curl -XGET "https://$INDEXER_IP_ADDR:9200" -u admin:admin -k --silent --fail; then
     #     error "Failed to verify indexer installation"
     #     return 1
     # fi
 
-    curl -XGET "https://$indexer_ip_address:9200" -u admin:admin -k
+    curl -XGET "https://$INDEXER_IP_ADDR:9200" -u admin:admin -k
 
     log "Wazuh indexer installed and configured successfully"
     return 0
@@ -314,10 +317,10 @@ function install_manager() {
 
 function install_filebeat() {
     cd "${PATH_TO_SCRIPTS}"
-    local manager_ip_address="$1"
+    MANAGER_IP_ADDR="$1"
     local distro="$2"
 
-    if [ -z "$manager_ip_address" ]; then
+    if [ -z "$MANAGER_IP_ADDR" ]; then
         error "IP address parameter is required"
         return 1
     fi
@@ -344,7 +347,7 @@ function install_filebeat() {
     fi
 
     # Configure Filebeat settings
-    if ! sudo sed -i 's|^  hosts: \[".*"\]|  hosts: ["'$manager_ip_address':9200"]|' "$FILEBEAT_CONFIG_FILE" || \
+    if ! sudo sed -i 's|^  hosts: \[".*"\]|  hosts: ["'$MANAGER_IP_ADDR':9200"]|' "$FILEBEAT_CONFIG_FILE" || \
        ! sudo sed -i 's|^  username:.*|  username: admin|' "$FILEBEAT_CONFIG_FILE" || \
        ! sudo sed -i 's|^  password:.*|  password: admin|' "$FILEBEAT_CONFIG_FILE"; then
         error "Failed to configure Filebeat settings"
@@ -392,7 +395,7 @@ function install_filebeat() {
 
 
 function change_indexer_name(){
-    manager_ip="$1"
+    MANAGER_IP_ADDR="$1"
     log "Changing indexer names.."
 
     sudo systemctl stop filebeat
@@ -406,7 +409,7 @@ function change_indexer_name(){
 
     log "Successfully updated index patterns in template.json"
 
-    curl -XPUT -k -u admin:admin "https://${manager_ip}:9200/_template/wazuh" -H 'Content-Type: application/json' -d @template.json
+    curl -XPUT -k -u admin:admin "https://${MANAGER_IP_ADDR}:9200/_template/wazuh" -H 'Content-Type: application/json' -d @template.json
 
 
     log "Updating Filebeat manifest file..."
@@ -426,9 +429,9 @@ function change_indexer_name(){
 
 function install_dashboard() {
     cd "${PATH_TO_SCRIPTS}"
-    local dashboard_ip_address="$1"
+    DASHBOARD_IP_ADDR="$1"
 
-    if [ -z "$dashboard_ip_address" ]; then
+    if [ -z "$DASHBOARD_IP_ADDR" ]; then
         error "IP address parameter is required"
         return 1
     fi
@@ -466,8 +469,8 @@ function install_dashboard() {
     sudo chown -R wazuh-dashboard:wazuh-dashboard "$DASHBOARD_CERT_DIR"
 
     # Update configuration
-    if ! sed -i 's|^server.host:.*|server.host: '"$dashboard_ip_address"'|' "$DASHBOARD_CONFIG_FILE" || \
-       ! sed -i 's|^opensearch.hosts:.*|opensearch.hosts: https://'"$dashboard_ip_address"':9200|' "$DASHBOARD_CONFIG_FILE"; then
+    if ! sed -i 's|^server.host:.*|server.host: '"$DASHBOARD_IP_ADDR"'|' "$DASHBOARD_CONFIG_FILE" || \
+       ! sed -i 's|^opensearch.hosts:.*|opensearch.hosts: https://'"$DASHBOARD_IP_ADDR"':9200|' "$DASHBOARD_CONFIG_FILE"; then
         error "Failed to update configuration files"
         return 1
     fi
@@ -478,7 +481,7 @@ function install_dashboard() {
     sudo systemctl enable wazuh-dashboard
     sudo systemctl start wazuh-dashboard
 
-    if ! sudo sed -i 's|url: https://localhost|url: https://'"$dashboard_ip_address"'|' "$WAZUH_CONFIG_FILE"; then
+    if ! sudo sed -i 's|url: https://localhost|url: https://'"$DASHBOARD_IP_ADDR"'|' "$WAZUH_CONFIG_FILE"; then
         error "Failed to update ${WAZUH_CONFIG_FILE}"
         return 1
     fi
@@ -488,6 +491,7 @@ function install_dashboard() {
     log "Wazuh dashboard installed and configured successfully"
     return 0
 }
+
 
 
 function copy_assisted_plugins()
