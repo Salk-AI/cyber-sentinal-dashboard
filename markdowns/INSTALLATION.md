@@ -15,11 +15,11 @@ This guide provides comprehensive instructions for installing, managing, and und
    - [Requirements](#requirements)
    - [General Usage](#general-usage)
 3. [Commands and Examples](#commands-and-examples)
+   - [Building Packages](#building-packages)
+   - [Generating Files](#generating-files)
    - [Installing All Components](#installing-all-components)
    - [Installing Individual Components](#installing-individual-components)
    - [Uninstalling Components](#uninstalling-components)
-   - [Building Packages](#building-packages)
-   - [Generating Files](#generating-files)
 4. [Accessing the Dashboard](#accessing-the-dashboard)
 5. [Support and Contribution](#support-and-contribution)
 
@@ -51,16 +51,15 @@ The following visual representation explains the interaction between Wazuh compo
 
 ### Features
 
+- Build packages for specific distributions and versions.
+- Generate offline installation files.
+- Generate installation files using specified IP addresses.
 - Install Wazuh components: **Indexer**, **Manager**, **Filebeat**, and **Dashboard**.
 - Uninstall specific components.
-- Generate offline installation files.
-- Build packages for specific distributions and versions.
-- Generate installation files using specified IP addresses.
 
 ### Requirements
 
 - **Root Privileges**: Run the script with `sudo` or as the root user.
-- **Dependencies**: Ensure dependencies for Wazuh are pre-installed.
 
 ### General Usage
 
@@ -74,6 +73,27 @@ sudo ./wazuh_setup.sh [OPTIONS]
 ---
 
 ## Commands and Examples
+
+### Building Packages
+
+Build a package for a specific distribution and version:
+
+```bash
+sudo ./wazuh_setup.sh --build-package <distro> <version>
+```
+
+### Generating Files
+
+#### Generate Offline Installation Files
+```bash
+sudo ./wazuh_setup.sh --offline-files <distro>
+```
+
+#### Generate Installation Files with IPs
+```bash
+sudo ./wazuh_setup.sh --generate-install-files <indexer-ip> <manager-ip> <dashboard-ip>
+```
+
 
 ### Installing All Components
 
@@ -117,25 +137,7 @@ sudo ./wazuh_setup.sh --distro <distro> --action uninstall --component <componen
 
 Replace `<component>` with one of: `all`, `indexer`, `manager`, `filebeat`, or `dashboard`.
 
-### Building Packages
 
-Build a package for a specific distribution and version:
-
-```bash
-sudo ./wazuh_setup.sh --build-package <distro> <version>
-```
-
-### Generating Files
-
-#### Generate Offline Installation Files
-```bash
-sudo ./wazuh_setup.sh --offline-files <distro>
-```
-
-#### Generate Installation Files with IPs
-```bash
-sudo ./wazuh_setup.sh --generate-install-files <indexer-ip> <manager-ip> <dashboard-ip>
-```
 
 ---
 
