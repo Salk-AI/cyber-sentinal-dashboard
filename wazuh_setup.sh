@@ -492,17 +492,27 @@ function install_dashboard() {
     return 0
 }
 
+function install_dashboard_with_assisted_installation()
+{
+    log "Setting up initial setup for cyber-sentinal..."
+    cd "${PATH_TO_SCRIPTS}"
+    sudo bash wazuh-install.sh --offline-installation --wazuh-indexer node-1
+    sudo bash wazuh-install.sh --offline-installation --start-cluster
+    sudo tar -axf wazuh-install-files.tar wazuh-install-files/wazuh-passwords.txt -O | grep -P "\'admin\'" -A 1
+    sudo bash wazuh-install.sh --offline-installation --wazuh-server wazuh-1
+    sudo bash wazuh-install.sh --offline-installation --wazuh-dashboard dashboard
+
+    sudo chmod 777 -R /usr/share/wazuh-dashboard
+    cd "${PATH_SCRIPTS}"
+    mkdir assisted_plugins
+    cd assisted_plugins
+    sudo cp -r /usr/share/wazuh-dashboard/plugins/* ./
+}
 
 
 function copy_assisted_plugins()
 {
-    local current_path="$(pwd)"
-    
-    # Validate source directory exists
-    if [[ ! -d "$current_path/assisted_plugins" ]]; then
-        error "assisted_plugins directory not found at $current_path"
-        return 1
-    fi
+    cd "${PATH_TO_SCRIPTS}/assisted_plugins/"
 
     # Set permissions on destination
     sudo chmod 777 -R /usr/share/wazuh-dashboard
@@ -521,24 +531,39 @@ function copy_assisted_plugins()
 
     for plugin in "${plugins[@]}"; do
         sudo rm -rf "/usr/share/wazuh-dashboard/plugins/$plugin"
-        sudo cp -r "$current_path/assisted_plugins/$plugin" /usr/share/wazuh-dashboard/plugins/
+        sudo cp -r "$PATH_TO_SCRIPTS/assisted_plugins/$plugin" /usr/share/wazuh-dashboard/plugins/
     done
 
 
     sudo rm -rf "/usr/share/wazuh-dashboard/plugins/alertingDashboards"
-    sudo cp -r "$current_path/assisted_plugins/alertingDashboards" /usr/share/wazuh-dashboard/plugins/
+    sudo cp -r "$PATH_TO_SCRIPTS/assisted_plugins/alertingDashboards" /usr/share/wazuh-dashboard/plugins/
 
     # Restart dashboard service
     sudo systemctl daemon-reload
-    if ! sudo systemctl restart wazuh-dashboard; then
-        error "Failed to restart wazuh-dashboard service"
-        return 1
-    fi
+    sudo systemctl enable wazuh-dashboard
+    sudo systemctl start wazuh-dashboard
 
     log "Successfully copied and configured assisted plugins"
     return 0
 }
 
+
+function setup_dashboard()
+{
+    generate_offline_files
+    generate_install_files
+    install_dashboard_with_assisted_installation
+    delete_components
+    cd "${PATH_TO_SCRIPTS}"
+    sudo rm -rf wazuh-offline/ wazuh-install-files/
+    sudo tar xf wazuh-offline.tar.gz
+    sudo tar xf wazuh-install-files.tar
+    install_indexer
+    install_manager
+    install_filebeat
+    install_dashboard
+    copy_assisted_plugins
+}
 
 function build_package(){
 
