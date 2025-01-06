@@ -207,13 +207,13 @@ function generate_install_files() {
 
 
 function install_indexer() {
-    local ip_address="$1"
+    local indexer_ip_address="$1"
     local distro="$2"
     local node_name="node-1"
     local certs_dir="/etc/wazuh-indexer/certs"
 
     # Validate input
-    if [[ -z "$ip_address" ]]; then
+    if [[ -z "$indexer_ip_address" ]]; then
         error "IP address parameter is required"
         return 1
     fi
@@ -236,41 +236,24 @@ function install_indexer() {
     fi
 
     # Create and configure certificates directory
-    sudo mkdir -p "$certs_dir"
+    sudo mkdir "$certs_dir"
 
     # Move certificates to proper location
-    local cert_files=(
-        "$node_name.pem:indexer.pem"
-        "$node_name-key.pem:indexer-key.pem"
-        "admin-key.pem:admin-key.pem"
-        "admin.pem:admin.pem"
-    )
-
-    for cert in "${cert_files[@]}"; do
-        IFS=":" read -r src dst <<< "$cert"
-        if ! sudo mv -n "wazuh-install-files/$src" "$certs_dir/$dst"; then
-            error "Failed to move certificate: $src"
-            return 1
-        fi
-    done
-
-    # Copy root CA certificate
-    if ! sudo cp wazuh-install-files/root-ca.pem "$certs_dir/"; then
-        error "Failed to copy root CA certificate"
-        return 1
-    fi
-
-    # Set proper permissions
-    sudo chmod 500 "$certs_dir"
-    sudo chmod 400 "$certs_dir"/indexer.pem
-    sudo chmod 400 "$certs_dir"/indexer-key.pem
-    sudo chmod 400 "$certs_dir"/admin.pem
-    sudo chmod 400 "$certs_dir"/admin-key.pem
-    sudo chmod 400 "$certs_dir"/root-ca.pem
-    sudo chown -R wazuh-indexer:wazuh-indexer "$certs_dir"
+    sudo mv -n wazuh-install-files/$node_name.pem /etc/wazuh-indexer/certs/indexer.pem
+    sudo mv -n wazuh-install-files/$node_name-key.pem /etc/wazuh-indexer/certs/indexer-key.pem
+    sudo mv wazuh-install-files/admin-key.pem /etc/wazuh-indexer/certs/
+    sudo mv wazuh-install-files/admin.pem /etc/wazuh-indexer/certs/
+    sudo cp wazuh-install-files/root-ca.pem /etc/wazuh-indexer/certs/
+    sudo chmod 500 /etc/wazuh-indexer/certs
+    sudo chmod 400 /etc/wazuh-indexer/certs/indexer.pem
+    sudo chmod 400 /etc/wazuh-indexer/certs/indexer-key.pem
+    sudo chmod 400 /etc/wazuh-indexer/certs/admin-key.pem
+    sudo chmod 400 /etc/wazuh-indexer/certs/admin.pem
+    sudo chmod 400 /etc/wazuh-indexer/certs/root-ca.pem
+    sudo chown -R wazuh-indexer:wazuh-indexer /etc/wazuh-indexer/certs
 
     # Configure indexer
-    if ! sudo sed -i 's/^network\.host: .*/network.host: "'$ip_address'"/' "$INDEXER_CONFIG_FILE"; then
+    if ! sudo sed -i 's/^network\.host: .*/network.host: "'$indexer_ip_address'"/' "$INDEXER_CONFIG_FILE"; then
         error "Failed to update indexer configuration"
         return 1
     fi
@@ -282,19 +265,16 @@ function install_indexer() {
     sudo systemctl start wazuh-indexer
 
     log "Initializing security settings..."
-    if ! sudo /usr/share/wazuh-indexer/bin/indexer-security-init.sh; then
-        error "Failed to initialize security settings"
-        return 1
-    fi
+    sudo /usr/share/wazuh-indexer/bin/indexer-security-init.sh
 
     # Verify installation
     log "Verifying indexer installation..."
-    # if ! curl -XGET "https://$ip_address:9200" -u admin:admin -k --silent --fail; then
+    # if ! curl -XGET "https://$indexer_ip_address:9200" -u admin:admin -k --silent --fail; then
     #     error "Failed to verify indexer installation"
     #     return 1
     # fi
 
-    curl -XGET "https://$ip_address:9200" -u admin:admin -k
+    curl -XGET "https://$indexer_ip_address:9200" -u admin:admin -k
 
     log "Wazuh indexer installed and configured successfully"
     return 0
