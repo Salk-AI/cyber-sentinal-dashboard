@@ -57,6 +57,7 @@ check_dependencies() {
 
 
 function delete_components() {
+    cd "${PATH_TO_SCRIPTS}"
     local component="$1"
     local distro="$2"
 
