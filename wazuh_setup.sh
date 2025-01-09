@@ -540,6 +540,11 @@ function copy_assisted_plugins()
     sudo rm -rf "/usr/share/wazuh-dashboard/plugins/alertingDashboards"
     sudo cp -r "$PATH_TO_SCRIPTS/assisted_plugins/alertingDashboards" /usr/share/wazuh-dashboard/plugins/
 
+    # Replacing an image content on login page.
+    SRC_FILE="../cyber-sentinal-dashboard/src/core/server/core_app/assets/wazuh_logo.svg"
+    DEST_FILE="/usr/share/wazuh-dashboard/plugins/securityDashboards/target/public/30e500f584235c2912f16c790345f966.svg"
+
+    cat "$SRC_FILE" > "$DEST_FILE"    
     # Restart dashboard service
     sudo systemctl daemon-reload
     sudo systemctl enable wazuh-dashboard
